@@ -16,7 +16,15 @@ con.on('open', () => {
 app.use(express.json())
 
 
+// define initial route
+app.get('/', (req, res) => {
+    res.json({
+        "message": "Welcome to Wash-bay REST Api "
+    });
+});
 
+// routes
+require('./app/Routes/service.routes')(app);
 
 app.listen(9000, () => {
     console.log('Server started')
