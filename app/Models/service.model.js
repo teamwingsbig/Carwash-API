@@ -9,9 +9,8 @@ const staffSchema = mongoose.Schema({
     sub_services: [{
         name: {type: String},
         brand_id: {type: mongoose.Types.ObjectId, ref: 'brand_master'}, // FK
-        varients: [
-            {
-                name: {type: String}
+        varients: [{            
+                name: {type: String},               
             }
         ],
     }],

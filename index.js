@@ -4,6 +4,8 @@ const url = 'mongodb://localhost/washbay'
 const bodyParser = require('body-parser')
 
 
+
+
 const app = express()
 
 mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology: true})
@@ -13,7 +15,9 @@ con.on('open', () => {
     console.log('connected...')
 })
 
-app.use(express.json())
+app.use(bodyParser.json());
+app.use(express.urlencoded({extended:false}));
+
 
 
 // define initial route
@@ -25,6 +29,8 @@ app.get('/', (req, res) => {
 
 // routes
 require('./app/Routes/service.routes')(app);
+require('./app/Routes/brand.routes')(app);
+
 
 app.listen(9000, () => {
     console.log('Server started')
