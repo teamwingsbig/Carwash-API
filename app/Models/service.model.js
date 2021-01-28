@@ -14,6 +14,8 @@ const staffSchema = mongoose.Schema({
             }
         ],
     }],
+    charge : {type:Number, required:true},
+    tax     : { type:Number, required:true },
     status: {type: Boolean, default: true},
 
 }, {
