@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
-mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology: true})
+mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology: true, useFindAndModify: false})
 const con = mongoose.connection
 
 con.on('open', () => {
