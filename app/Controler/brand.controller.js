@@ -53,7 +53,7 @@ catch(error) {
 
 exports.getBrand = (req, res) => {
    try{
-       Brand.find().then((brand)=>{
+       Brand.find({status:true}).then((brand)=>{
            res.send(brand)
        })
        .catch(err=>{
@@ -85,21 +85,11 @@ exports.getSingleBrand =  (req, res) => {
 
 }
 
+//change status (implementing deletion)
 exports.replaceBrand = (req, res) => {
     try{
 
-        // const {brandId} = req.params.id
-        const brandName  = req.body.brandName  
-
-        if(!Name){
-            return res.send("PLease Fill All Fields")
-        }
-        if(Name.match(AlphaRegEx) == null){
-            return res.send("Brandname Should Be  Alphabet")
-        }
-        
-       
-        Brand.findOneAndUpdate({_id:req.params.id,},{brandName:brandName}).then((data)=>{
+        Brand.findOneAndUpdate({_id:req.params.id,},{status:false}).then((data)=>{
             return Response.sendSuccessmsg(res,'Brand Updated')
         })
         .catch(err=>{
@@ -111,7 +101,7 @@ exports.replaceBrand = (req, res) => {
     }
 }
 
-
+// update brand details 
 exports.updateBrand = (req, res) => {
     try{
 
