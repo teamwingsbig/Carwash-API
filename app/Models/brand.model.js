@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-var schema = mongoose.Schema;
 
 
 const brandSchema  = mongoose.Schema({
