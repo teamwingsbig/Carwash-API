@@ -22,10 +22,10 @@ exports.createService = (req, res) => {
         const brand_id = service.brand_id
 
         if(varientArray.length<=0){
-            return res.send("Specify Varient")
+            return Response.sendFailedmsg(res,"Specify Varient")
         }
         if(!name || !brand_id){
-            return res.send("Please specify subservice")
+            return Response.sendFailedmsg(res,"Please specify subservice")
         }
         sub_serviceArray.push({
             name: name,
@@ -36,26 +36,26 @@ exports.createService = (req, res) => {
 
     const {title,description,type,charge,tax } = req.body
     if(!title){
-        return res.send("Plese enter title")
+        return Response.sendFailedmsg(res,"Plese enter title")
     }
     if(!description){
-        return res.send("Plese enter description")
+        return Response.sendFailedmsg(res,"Plese enter description")
     }
     if(!type){
-        return res.send("Plese select servicetype")
+        return Response.sendFailedmsg(res,"Plese select servicetype")
     }
     if(title.match(AlphaRegEx) == null){
-        return res.send("title should be alphabetic")
+        return Response.sendFailedmsg(res,"title should be alphabetic")
     }
     if(type.match(AlphaRegEx) == null){
-        return res.send("Service type should be alphabetic")
+        return Response.sendFailedmsg(res,"Service type should be alphabetic")
     }
 
     if( type == "Service" && sub_service.length <=0 ){
-        return res.send("Specify sub services")        
+        return Response.sendFailedmsg(res,"Specify sub services")        
     }
     if( type == "Wash" && sub_service.length>0){
-        return res.send("Could not add service ")
+        return Response.sendFailedmsg(res,"Could not add service ")
     }
     
    
@@ -74,13 +74,13 @@ exports.createService = (req, res) => {
         return Response.sendSuccessmsg(res,'Service Added')
     })
     .catch(err=>{
-        return Response.sendFailedmsg(res,'Failed To Add Service')
+        return Response.sendFailedmsg(res,'Failed To Add Service',err.message)
     })
 
 
     }
     catch(err){
-        return Response.sendFailedmsg(res,'Failed To Add Service')
+        return Response.sendFailedmsg(res,'Failed To Add Service',err.message)
     }
 }
 
@@ -119,11 +119,11 @@ exports.deleteService = (req, res) =>{
             return Response.sendSuccessmsg(res,'Service Deleted')
         })
         .catch(err=>{
-            res.send([])
+            return Response.sendFailedmsg(res,'Failed To Delete Service',err.message)
         })
     }
     catch(err){
-        res.send([])
+        return Response.sendFailedmsg(res,'Failed To Delete Brand',err.message)
     }
 }
 
@@ -144,10 +144,10 @@ exports.updateService = (req, res) => {
             const name = service.name
             const brand_id = service.brand_id
             if(varientArray.length<=0){
-                return res.send("Specify Varient")
+                return Response.sendFailedmsg(res,"Specify Varient")
             }
             if(!name || !brand_id){
-                return res.send("Please specify subservice")
+                return  Response.sendFailedmsg(res,"Please specify subservice")
             }
             sub_serviceArray.push({
                 name: name,
@@ -158,26 +158,26 @@ exports.updateService = (req, res) => {
         }
 
         if(!title){
-            return res.send("Plese enter title")
+            return  Response.sendFailedmsg(res,"Plese enter title")
         }
         if(!description){
-            return res.send("Plese enter description")
+            return  Response.sendFailedmsg(res,"Plese enter description")
         }
         if(!type){
-            return res.send("Plese select servicetype")
+            return  Response.sendFailedmsg(res,"Plese select servicetype")
         }
         if(title.match(AlphaRegEx) == null){
-            return res.send("title should be alphabetic")
+            return Response.sendFailedmsg(res,"title should be alphabetic")
         }
         if(type.match(AlphaRegEx) == null){
-            return res.send("Service type should be alphabetic")
+            return  Response.sendFailedmsg(res,"Service type should be alphabetic")
         }
 
         if( type == "Service" && sub_service.length <=0 ){
-            return res.send("Specify sub services")        
+            return  Response.sendFailedmsg(res,"Specify sub services")        
         }
         if( type == "Wash" && sub_service.length>0){
-            return res.send("Could not add service ")
+            return  Response.sendFailedmsg(res,"Could not add service")
         }
 
         Service.findByIdAndUpdate({_id:req.params.id},{
@@ -191,11 +191,11 @@ exports.updateService = (req, res) => {
             return Response.sendSuccessmsg(res,'Service Updated')
         })
         .catch(err=>{
-            res.send([])
+            return Response.sendFailedmsg(res,'Failed To Update Service',err.message)
         })
 
     }
     catch(err){
-        res.send([])
+        return Response.sendFailedmsg(res,'Failed To Update Service',err.message)
     }
 }

@@ -89,15 +89,15 @@ exports.getSingleBrand =  (req, res) => {
 exports.replaceBrand = (req, res) => {
     try{
 
-        Brand.findOneAndUpdate({_id:req.params.id,},{status:false}).then((data)=>{
-            return Response.sendSuccessmsg(res,'Brand Updated')
+        Brand.findOneAndUpdate({_id:req.params.id},{status:false}).then((data)=>{
+            return Response.sendSuccessmsg(res,'Brand Deleted')
         })
         .catch(err=>{
-            res.send([])
+            return Response.sendFailedmsg(res,'Failed To Delete Brand',err.message)
         })
     }
     catch(error){
-        res.send([])
+        return Response.sendFailedmsg(res,'Failed To Delete Brand',err.message)
     }
 }
 
@@ -106,24 +106,26 @@ exports.updateBrand = (req, res) => {
     try{
 
         // const {brandId} = req.params.id
+        const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
         const brandName  = req.body.brandName  
+        console.log(brandName)
 
-        if(!Name){
+        if(!brandName){
             return res.send("PLease Fill All Fields")
         }
-        if(Name.match(AlphaRegEx) == null){
+        if(brandName.match(AlphaRegEx) == null){
             return res.send("Brandname Should Be  Alphabet")
         }
         
        
-        Brand.findOneAndUpdate({_id:req.params.id,},{brandName:brandName}).then((data)=>{
+        Brand.findOneAndUpdate({_id:req.params.id},{brandName:brandName}).then((data)=>{
             return Response.sendSuccessmsg(res,'Brand Updated')
         })
         .catch(err=>{
-            res.send([])
+            return Response.sendFailedmsg(res,'Failed To Update Brand',err.message)
         })
     }
     catch(error){
-        res.send([])
+        return Response.sendFailedmsg(res,'Failed To Update Brand',err.message)
     }
 }
