@@ -1,6 +1,8 @@
 const Company  = require('../Models/company.model')
 const Response = require('../helper/response')
 const path = require('path')
+const emailValidator = require('email-validator')
+
 
 exports.createCompany = (req, res) => {
   try{
@@ -60,6 +62,9 @@ exports.createCompany = (req, res) => {
       }
       if(isNaN(tax) || isNaN(vat)){
         return Response.sendFailedmsg(res,'Tax/Vat Should Be Numeric')
+      }
+      if(!emailValidator.validate(email)) {
+        return Response.sendFailedmsg(res,'Invalid Email Address ')
       }
 
       const company = new Company({
@@ -176,6 +181,9 @@ exports.updateCompany = (req, res) => {
     }
     if(isNaN(tax) || isNaN(vat)){
       return Response.sendFailedmsg(res,'Tax/Vat Should Be Numeric')
+    }
+    if(!emailValidator.validate(email)) {
+      return Response.sendFailedmsg(res,'Invalid Email Address ')
     }
 
 
