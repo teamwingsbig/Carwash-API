@@ -40,6 +40,7 @@ require('./app/Routes/brand.routes')(app);
 require('./app/Routes/company.routes')(app);
 require('./app/Routes/emirate.routes')(app);
 require('./app/Routes/serviceRep.routes')(app);
+require('./app/Routes/order.routes')(app);
 
 
 app.listen(9000, () => {
