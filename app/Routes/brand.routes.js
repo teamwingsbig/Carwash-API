@@ -6,5 +6,5 @@ module.exports = (app) => {
     app.get('/brand',brand.getBrand);
     app.get('/brand/:id', brand.getSingleBrand);
     app.put('/brand/:id',brand.replaceBrand);
-    app.patch('/brand/:id',brand.updateBrand)
+    app.patch('/brand/:id',brand.updateBrand);
 }
