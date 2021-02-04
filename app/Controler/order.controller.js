@@ -8,10 +8,9 @@ exports.createOrder = (req, res) => {
 
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
         const NumPlateRegEx = /^[A-Z]{3}-\d{5}-[A-Z]{1}$/
-
-        const serviceArray  = []
+       
         const sub_serviceArray = []
-        const paymentArray  = []
+        
 
         const service = req.body.service
         const payment = req.body.payment
@@ -38,7 +37,7 @@ exports.createOrder = (req, res) => {
                 discount:payment.discount,
                 taxable_amount:payment.taxable_amount,
                 vat_total:payment.vat_total,
-                net_total:payment.net_total,               
+                net_total:payment.net_total,              
 
             }
        
@@ -134,4 +133,88 @@ exports.getSingleOrder = (req,res) => {
         res.send([])
     }
 }
+
+
+exports.orderReport = (req,res) => {
+    try {
+
+      const { start_date, end_date, service_rep } = req.body
+      const { limit=10, page=1} = req.query
+
+      const startDate = new Date(start_date)
+      const endDate   = new Date(end_date)
+
+      if(start_date && end_date) {
+          Order.find({order_date:{$gt:startDate,$lt:endDate}})
+          .limit(limit * 1)
+          .skip((page-1)*limit)
+          .then((data) => {
+              res.send(data)
+          })
+          .catch(err => {
+              res.send([])
+          })
+
+    }
+
+      else if(start_date) {
+          Order.find({order_date:{$gt:startDate}})
+          .limit(limit * 1)
+          .skip((page-1)*limit)
+          .then((data) => {
+              res.send(data)
+          })
+          .catch(err => {
+            res.send([])
+        })
+    }
+
+      else if(end_date) {
+        Order.find({order_date:{$lt:endDate}})
+        .limit(limit * 1)
+        .skip((page-1)*limit)
+        .then((data) => {
+            res.send(data)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+     
+     else if(service_rep) {
+        Order.find({service_rep:service_rep})
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .then((data) => {
+            res.send(data)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+
+    // else if(start_date && end_date && service_rep) {
+    //     Order.find({order_date:{$gt:startDate,$lt:endDate},service_rep:service_rep})
+    //     .limit(limit * 1)
+    //     .skip((page-1)*limit)
+    //     .then((data) => {
+    //         res.send(data)
+    //     })
+    //     .catch(err => {
+    //         res.send([])
+    //     })
+    // }
+
+
+
+    }
+    catch(err) {
+        res.send([])
+    }
+}
+
+// 6019053d9064a928c8bd57b0
+
+
+
 
