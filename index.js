@@ -41,6 +41,7 @@ require('./app/Routes/company.routes')(app);
 require('./app/Routes/emirate.routes')(app);
 require('./app/Routes/serviceRep.routes')(app);
 require('./app/Routes/order.routes')(app);
+require('./app/Routes/users.routes')(app);
 
 
 app.listen(9000, () => {
