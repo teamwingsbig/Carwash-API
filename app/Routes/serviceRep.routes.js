@@ -4,7 +4,7 @@ module.exports = (app) => {
 
     app.post('/servicerep', serviceRep.createServiceRep);
     app.get('/servicerep', serviceRep.getServiceRep);
-    app.get('/servicerep/:id', serviceRep.getSingleServiceRep);
+    app.get('/servicerep/:id', serviceRep.getSingleServiceRep);    
     app.put('/servicerep/:id', serviceRep.removeServiceRep);
     app.patch('/servicerep/:id', serviceRep.updateServiceRep);
 }
