@@ -9,10 +9,10 @@ exports.createBrand = (req, res) => {
     const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
     if(!Name){
-        return res.send("PLease Fill All Fields")
+        return Response.sendFailedmsg(res,"PLease Fill All Fields")
     }
     if(Name.match(AlphaRegEx) == null){
-        return res.send("Brandname Should Be  Alphabet")
+        return Response.sendFailedmsg(res,"Brandname Should Be  Alphabet")
     }
 
     const newBrand = new Brand({
@@ -111,10 +111,10 @@ exports.updateBrand = (req, res) => {
         console.log(brandName)
 
         if(!brandName){
-            return res.send("PLease Fill All Fields")
+            return Response.sendFailedmsg(res,"PLease Fill All Fields")
         }
         if(brandName.match(AlphaRegEx) == null){
-            return res.send("Brandname Should Be  Alphabet")
+            return Response.sendFailedmsg(res,"Brandname Should Be  Alphabet")
         }
         
        
