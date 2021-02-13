@@ -3,7 +3,7 @@ exports.sendSuccessmsg = (res,message,additional={}) =>{
 
     let obj={
         status:true,
-        messsage:message
+        message:message
     }
     return res.send({...obj,...additional})
 }
@@ -14,7 +14,7 @@ exports.sendFailedmsg = (res,message,error) =>{
 
     let obj={
         status:false,
-        messsage:message,
+        message:message,
         error:error
     }
     return res.send(obj)
