@@ -6,8 +6,7 @@ const staffSchema = mongoose.Schema({
     title: {type: String, required: true},
     description: {type: String, default: ''},
     type: {type: String, required: true},
-    sub_services: [{
-        name: {type: String},
+    brand: [{
         brand_id: {type: mongoose.Types.ObjectId, ref: 'brand_master'}, // FK
         varients: [{            
                 name: {type: String},               

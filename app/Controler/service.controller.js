@@ -7,28 +7,25 @@ exports.createService = (req, res) => {
     try{
 
     const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
-    const sub_service = req.body.sub_services
 
-
-    const sub_serviceArray = [];
+    const brand = req.body.brand
+    const brand_array = [];
     const varientArray = [];
 
-    for (const service of sub_service) {
-        for (const varients of service.varients) {
+    for (const brands of brand) {
+        for (const varients of brands.varients) {
             varientArray.push(varients)
         }
         
-        const name = service.name
-        const brand_id = service.brand_id
+        const brand_id = brands.brand_id
 
         if(varientArray.length<=0){
             return Response.sendFailedmsg(res,"Specify Varient")
         }
-        if(!name || !brand_id){
-            return Response.sendFailedmsg(res,"Please specify subservice")
+        if(!brand_id){
+            return Response.sendFailedmsg(res,"Please specify brand")
         }
-        sub_serviceArray.push({
-            name: name,
+        brand_array.push({
             brand_id: brand_id,
             varients: varientArray
         })
@@ -51,10 +48,10 @@ exports.createService = (req, res) => {
         return Response.sendFailedmsg(res,"Service type should be alphabetic")
     }
 
-    if( type == "Service" && sub_service.length <=0 ){
-        return Response.sendFailedmsg(res,"Specify sub services")        
+    if( type == "Service" && brand.length <=0 ){
+        return Response.sendFailedmsg(res,"Specify brand details")        
     }
-    if( type == "Wash" && sub_service.length>0){
+    if( type == "Wash" && brand.length>0){
         return Response.sendFailedmsg(res,"Could not add service ")
     }
     
@@ -64,7 +61,7 @@ exports.createService = (req, res) => {
         title: title,
         description: description,
         type:type,
-        sub_services: (sub_serviceArray),
+        brand: (brand_array),
         charge:charge,
         tax:tax
 
@@ -130,27 +127,25 @@ exports.deleteService = (req, res) =>{
 exports.updateService = (req, res) => {
     try{
 
-        const  { title, description, type, charge, tax} = req.body
-        const sub_service = req.body.sub_services
-        const sub_serviceArray = [];
+        const  { title, description, type, charge, tax, vat} = req.body
+        const brand = req.body.brand
+        const brand_array = [];
         const varientArray = [];
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
 
-        for(const service of sub_service){
-            for(const varients of service.varients){
+        for(const brands of brand){
+            for(const varients of brands.varients){
                 varientArray.push(varients)
             }
-            const name = service.name
-            const brand_id = service.brand_id
+            const brand_id = brands.brand_id
             if(varientArray.length<=0){
                 return Response.sendFailedmsg(res,"Specify Varient")
             }
-            if(!name || !brand_id){
-                return  Response.sendFailedmsg(res,"Please specify subservice")
+            if(!brand_id){
+                return  Response.sendFailedmsg(res,"Please specify brand")
             }
-            sub_serviceArray.push({
-                name: name,
+            brand_array.push({
                 brand_id: brand_id,
                 varients: varientArray
             })        
@@ -173,10 +168,10 @@ exports.updateService = (req, res) => {
             return  Response.sendFailedmsg(res,"Service type should be alphabetic")
         }
 
-        if( type == "Service" && sub_service.length <=0 ){
-            return  Response.sendFailedmsg(res,"Specify sub services")        
+        if( type == "Service" && brand.length <=0 ){
+            return  Response.sendFailedmsg(res,"Specify varient")        
         }
-        if( type == "Wash" && sub_service.length>0){
+        if( type == "Wash" && brand.length>0){
             return  Response.sendFailedmsg(res,"Could not add service")
         }
 
@@ -184,9 +179,10 @@ exports.updateService = (req, res) => {
             title: title,
             description: description,
             type:type,
-            sub_services: (sub_serviceArray),
+            brand: (brand_array),
             charge:charge,
-            tax:tax 
+            tax:tax,
+            vat:vat 
         }).then((data)=>{
             return Response.sendSuccessmsg(res,'Service Updated')
         })
