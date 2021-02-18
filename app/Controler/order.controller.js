@@ -10,25 +10,38 @@ exports.createOrder = (req, res) => {
         const NumPlateRegEx = /^[A-Z]{3}-\d{5}-[A-Z]{1}$/
        
         const sub_serviceArray = []
+        let serviceDetails = {}
         
 
         const service = req.body.service
         const payment = req.body.payment
         const sub_services = service.sub_service
+        service_id = service.service_id
+
+        if(!sub_services) {
+             serviceDetails = {
+                service_id:service_id,
+            }  
+        }
+
+        else {
+            for(const subservice of sub_services) {
+                const sub_service_id = subservice.sub_service_id
+                const varient = subservice.varient
+                   sub_serviceArray.push({
+                       sub_service_id :sub_service_id,
+                       varient:varient
+                   }) 
+               } 
+              
+                serviceDetails = {
+                   service_id:service_id,
+                   sub_service : sub_serviceArray
+                 
+        }
 
         //looping Through service object
-           for(const subservice of sub_services) {
-            const sub_service_id = subservice.sub_service_id
-            const varient = subservice.varient
-               sub_serviceArray.push({
-                   sub_service_id :sub_service_id,
-                   varient:varient
-               }) 
-           } 
-           service_id = service.service_id
-           const serviceDetails = {
-               service_id:service_id,
-               sub_service:sub_serviceArray
+  sub_service:sub_serviceArray
            }  
             const paymentDetails ={
                 payment_mode:payment.payment_mode,
