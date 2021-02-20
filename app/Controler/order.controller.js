@@ -25,6 +25,7 @@ exports.createOrder = (req, res) => {
         }
 
         else {
+            //looping Through service object
             for(const subservice of sub_services) {
                 const sub_service_id = subservice.sub_service_id
                 const varient = subservice.varient
@@ -40,8 +41,6 @@ exports.createOrder = (req, res) => {
                  
         }
 
-        //looping Through service object
-  sub_service:sub_serviceArray
            }  
             const paymentDetails ={
                 payment_mode:payment.payment_mode,

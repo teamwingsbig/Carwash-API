@@ -12,24 +12,28 @@ exports.createService = (req, res) => {
     const brand_array = [];
     const varientArray = [];
 
-    for (const brands of brand) {
-        for (const varients of brands.varients) {
-            varientArray.push(varients)
+    if(brand) {
+        for (const brands of brand) {
+            for (const varients of brands.varients) {
+                varientArray.push(varients)
+            }
+            
+            const brand_id = brands.brand_id
+    
+            if(varientArray.length<=0){
+                return Response.sendFailedmsg(res,"Specify Varient")
+            }
+            if(!brand_id){
+                return Response.sendFailedmsg(res,"Please specify brand")
+            }
+            brand_array.push({
+                brand_id: brand_id,
+                varients: varientArray
+            })
         }
-        
-        const brand_id = brands.brand_id
-
-        if(varientArray.length<=0){
-            return Response.sendFailedmsg(res,"Specify Varient")
-        }
-        if(!brand_id){
-            return Response.sendFailedmsg(res,"Please specify brand")
-        }
-        brand_array.push({
-            brand_id: brand_id,
-            varients: varientArray
-        })
     }
+    
+
 
     const {title,description,type,charge,tax } = req.body
     if(!title){
@@ -83,12 +87,25 @@ exports.createService = (req, res) => {
 
 exports.getService = (req, res) => {
     try{
-        Service.find({status:true}).then((brand)=>{
-            res.send(brand)
-        })
-        .catch(err=>{
-            res.send([])
-        })
+        const type= req.query.type
+
+        if(type) {
+            Service.find({type:type,status:true}).then((brand)=>{
+                res.send(brand)
+            })
+            .catch(err=>{
+                res.send([])
+            })
+        }
+        else {
+            Service.find({status:true}).then((brand)=>{
+                res.send(brand)
+            })
+            .catch(err=>{
+                res.send([])
+            })
+        }
+
     }
     catch(err){
         res.send([])
