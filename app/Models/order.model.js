@@ -11,8 +11,8 @@ const customerOrder = mongoose.Schema({
     order_date : {type:Date, default:Date.now},
     service:{
         service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},
-        sub_service:[{
-            sub_service_id: {type:mongoose.Types.ObjectId, ref:"service_master.sub_services"},
+        brand:[{
+            brand_id: {type:mongoose.Types.ObjectId, ref:"service_master.sub_services"},
             varient : {type:mongoose.Types.ObjectId, ref:"service_master.sub_services.varient"}
         }]
     },
