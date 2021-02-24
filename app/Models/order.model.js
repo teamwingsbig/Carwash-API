@@ -9,13 +9,15 @@ const customerOrder = mongoose.Schema({
     vehicle_name :{ type:String,},
     vehicle_number :{ type:String, required:true},
     order_date : {type:Date, default:Date.now},
-    service:{
-        service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},
-        brand:[{
-            brand_id: {type:mongoose.Types.ObjectId, ref:"service_master.sub_services"},
-            varient : {type:mongoose.Types.ObjectId, ref:"service_master.sub_services.varient"}
-        }]
-    },
+    service:[{
+            service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},        
+            brand_id: {type:mongoose.Types.ObjectId, ref:"service_master.brand"},
+            varient : {type:mongoose.Types.ObjectId, ref:"service_master.brand.varient"}
+       
+    }],
+    wash_service:[{
+        service_id:{type:mongoose.Types.ObjectId, ref:"service_master"}}
+    ], 
     invoice_number :{ type:String, required:true},
     invoice_ref_number:{ type:String, required:true},
     service_rep:{ type:mongoose.Types.ObjectId, ref:'service_rep'},
