@@ -9,39 +9,38 @@ exports.createOrder = (req, res) => {
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
         const NumPlateRegEx = /^[A-Z]{3}-\d{5}-[A-Z]{1}$/
        
-        const brandArray = []
-        let serviceDetails = {}
+        const serviceArray = []
+        const washserviceArray = []
         
 
         const service = req.body.service
+        const wash_service = req.body.wash_service
         const payment = req.body.payment
-        const brands = service.brand
-        service_id = service.service_id
 
-        if(!brands) {
-             serviceDetails = {
-                service_id:service_id,
-            }  
-        }
+       if(service) {
+           for (services of service) {
+               service_id = services.service_id,
+               brand_id = services.brand_id,
+               varient = services.varient
+           }
 
-        else {
-            //looping Through service object
-            for(const brand of brands) {
-                const brand_id = brand.brand_id
-                const varient = brand.varient
-                brandArray.push({
-                       brand_id :brand_id,
-                       varient:varient
-                   }) 
-               } 
-              
-                serviceDetails = {
-                   service_id:service_id,
-                   brand : brandArray
-                 
-        }
+           serviceArray.push ({
+               service_id : services.service_id,
+               brand_id : services.brand_id,
+               varient : services.varient
+           })
+       }
 
-           }  
+       if(wash_service) {
+           for(wash_services of wash_service) {
+               service_id = wash_services.service_id
+           }
+           washserviceArray.push({
+               service_id:service_id
+           })
+       }
+        
+      
             const paymentDetails ={
                 payment_mode:payment.payment_mode,
                 payment_date:payment.payment_date,
@@ -93,7 +92,8 @@ exports.createOrder = (req, res) => {
             customer_trn:customer_trn,
             vehicle_name:vehicle_name,
             vehicle_number:vehicle_number,
-            service:serviceDetails,
+            service:serviceArray,
+            wash_service:washserviceArray,
             invoice_number:invoice_number,
             invoice_ref_number:invoice_ref_number,
             service_rep:service_rep,
