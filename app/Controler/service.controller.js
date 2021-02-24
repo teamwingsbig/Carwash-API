@@ -11,29 +11,7 @@ exports.createService = (req, res) => {
     const brand = req.body.brand
     const brand_array = [];
     const varientArray = [];
-
-    if(brand) {
-        for (const brands of brand) {
-            for (const varients of brands.varients) {
-                varientArray.push(varients)
-            }
-            
-            const brand_id = brands.brand_id
     
-            if(varientArray.length<=0){
-                return Response.sendFailedmsg(res,"Specify Varient")
-            }
-            if(!brand_id){
-                return Response.sendFailedmsg(res,"Please specify brand")
-            }
-            brand_array.push({
-                brand_id: brand_id,
-                varients: varientArray
-            })
-        }
-    }
-    
-
 
     const {title,description,type,charge,tax } = req.body
     if(!title){
@@ -58,15 +36,47 @@ exports.createService = (req, res) => {
     if( type == "Wash" && brand.length>0){
         return Response.sendFailedmsg(res,"Could not add service ")
     }
+
+    if(brand) {
+        for (const brands of brand) {
+            for (const varients of brands.varients) {
+
+                if(!varients.price || !varients.price) {
+                    return Response.sendFailedmsg(res,'Please Fill Varient Details')
+                }
+                varientArray.push({
+                    name:varients.name,
+                    price:varients.price
+                })
+            }
+            
+            const brand_id = brands.brand_id
+    
+            if(varientArray.length<=0){
+                return Response.sendFailedmsg(res,"Specify Varient")
+            }
+            if(!brand_id){
+                return Response.sendFailedmsg(res,"Please specify brand")
+            }
+            brand_array.push({
+                brand_id: brand_id,
+                varients: varientArray
+            })
+        }        
+    } 
+    let charges = charge
+    if(type == 'Service') {
+        charges = 0
+    }   
     
    
-
+    
     const service = new Service({
         title: title,
         description: description,
         type:type,
         brand: (brand_array),
-        charge:charge,
+        charge:charges,
         tax:tax
 
     });
@@ -77,7 +87,7 @@ exports.createService = (req, res) => {
     .catch(err=>{
         return Response.sendFailedmsg(res,'Failed To Add Service',err.message)
     })
-
+   res.send(service)
 
     }
     catch(err){
@@ -125,7 +135,6 @@ exports.getSingleService = (req, res) => {
         res.send([])
     }
 }
-
 
 exports.deleteService = (req, res) =>{
     try{
@@ -210,5 +219,20 @@ exports.updateService = (req, res) => {
     }
     catch(err){
         return Response.sendFailedmsg(res,'Failed To Update Service',err.message)
+    }
+}
+
+exports.getVarientByBrand = (req, res) => {
+    try {
+        const brand_id = req.query.brand_id
+        Service.find({'brand.brand_id':brand_id}).select('brand.varients').then((data) => {
+        res.send(data)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+    catch(err) {
+        res.send([])
     }
 }
