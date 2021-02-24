@@ -9,16 +9,16 @@ exports.createOrder = (req, res) => {
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
         const NumPlateRegEx = /^[A-Z]{3}-\d{5}-[A-Z]{1}$/
        
-        const sub_serviceArray = []
+        const brandArray = []
         let serviceDetails = {}
         
 
         const service = req.body.service
         const payment = req.body.payment
-        const sub_services = service.sub_service
+        const brands = service.brand
         service_id = service.service_id
 
-        if(!sub_services) {
+        if(!brands) {
              serviceDetails = {
                 service_id:service_id,
             }  
@@ -26,18 +26,18 @@ exports.createOrder = (req, res) => {
 
         else {
             //looping Through service object
-            for(const subservice of sub_services) {
-                const sub_service_id = subservice.sub_service_id
-                const varient = subservice.varient
-                   sub_serviceArray.push({
-                       sub_service_id :sub_service_id,
+            for(const brand of brands) {
+                const brand_id = brand.brand_id
+                const varient = brand.varient
+                brandArray.push({
+                       brand_id :brand_id,
                        varient:varient
                    }) 
                } 
               
                 serviceDetails = {
                    service_id:service_id,
-                   sub_service : sub_serviceArray
+                   brand : brandArray
                  
         }
 
@@ -99,7 +99,6 @@ exports.createOrder = (req, res) => {
             service_rep:service_rep,
             payment:paymentDetails
         })
-        // res.send(order)
 
         order.save().then((data) => {
             return Response.sendSuccessmsg(res,'Order Created')
