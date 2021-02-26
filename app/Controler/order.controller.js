@@ -40,18 +40,23 @@ exports.createOrder = (req, res) => {
            })
        }
         
-      
+
+            const taxable_amount = parseFloat(payment.subtotal) - parseFloat(payment.discount)
+            const vat_total      = parseFloat(payment.vat_total)
+            const net_total      = taxable_amount + vat_total
+
             const paymentDetails ={
                 payment_mode:payment.payment_mode,
                 payment_date:payment.payment_date,
                 subtotal:payment.subtotal,
                 discount:payment.discount,
-                taxable_amount:payment.taxable_amount,
-                vat_total:payment.vat_total,
-                net_total:payment.net_total,              
+                taxable_amount:taxable_amount,
+                vat_total:vat_total,
+                net_total:net_total,            
 
-            }
-       
+            }    
+
+                res.send(paymentDetails)
         
        
 
@@ -100,12 +105,12 @@ exports.createOrder = (req, res) => {
             payment:paymentDetails
         })
 
-        order.save().then((data) => {
-            return Response.sendSuccessmsg(res,'Order Created')
-        })
-        .catch(err => {
-            return Response.sendFailedmsg(res,'Failed To Create Order!',err.message)
-        })
+        // order.save().then((data) => {
+        //     return Response.sendSuccessmsg(res,'Order Created')
+        // })
+        // .catch(err => {
+        //     return Response.sendFailedmsg(res,'Failed To Create Order!',err.message)
+        // })
     }
 
     catch(err) {
