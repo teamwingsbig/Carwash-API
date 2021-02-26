@@ -236,3 +236,4 @@ exports.getVarientByBrand = (req, res) => {
         res.send([])
     }
 }
+ 
