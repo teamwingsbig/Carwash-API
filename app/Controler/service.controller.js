@@ -238,3 +238,13 @@ exports.getVarientByBrand = (req, res) => {
     }
 }
  
+// exports.deleteVarient = (req, res) => {
+
+//     try {
+
+//     }
+    
+//     catch(err) {
+
+//     }
+// }

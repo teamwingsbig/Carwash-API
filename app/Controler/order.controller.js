@@ -55,7 +55,7 @@ exports.createOrder = (req, res) => {
             payment_status: status
         }
 
-        res.send(paymentDetails)
+        // res.send(paymentDetails)
 
 
         const {
@@ -100,12 +100,12 @@ exports.createOrder = (req, res) => {
             payment: paymentDetails
         })
 
-        // order.save().then((data) => {
-        //     return Response.sendSuccessmsg(res,'Order Created')
-        // })
-        // .catch(err => {
-        //     return Response.sendFailedmsg(res,'Failed To Create Order!',err.message)
-        // })
+        order.save().then((data) => {
+            return Response.sendSuccessmsg(res,'Order Created')
+        })
+        .catch(err => {
+            return Response.sendFailedmsg(res,'Failed To Create Order!',err.message)
+        })
     } catch (err) {
         return Response.sendFailedmsg(res, 'Failed To Create Order!', err.message)
     }
