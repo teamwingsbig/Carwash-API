@@ -7,7 +7,6 @@ exports.createOrder = (req, res) => {
     try {
 
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
-        const NumPlateRegEx = /^[A-Z]{3}-\d{5}-[A-Z]{1}$/
 
         const serviceArray = []
         const washserviceArray = []
@@ -83,9 +82,7 @@ exports.createOrder = (req, res) => {
             return Response.sendFailedmsg(res, 'Name Should Be Alphabetic')
         }
 
-        if (vehicle_number.match(NumPlateRegEx) == null) {
-            return Response.sendFailedmsg(res, 'Invalid Vehicle Number')
-        }
+
 
 
         const order = new Order({
