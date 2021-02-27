@@ -46,7 +46,7 @@ exports.createOrder = (req, res) => {
 
         const paymentDetails = {
             payment_mode: payment.payment_mode,
-            payment_date: payment.payment_date,
+            payment_date: new Date(payment.payment_date),
             subtotal: payment.subtotal,
             discount: payment.discount,
             taxable_amount: taxable_amount,
