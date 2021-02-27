@@ -87,7 +87,7 @@ exports.createService = (req, res) => {
     .catch(err=>{
         return Response.sendFailedmsg(res,'Failed To Add Service',err.message)
     })
-   res.send(service)
+//    res.send(service)
 
     }
     catch(err){
@@ -238,13 +238,3 @@ exports.getVarientByBrand = (req, res) => {
     }
 }
  
-// exports.deleteVarient = (req, res) => {
-
-//     try {
-
-//     }
-    
-//     catch(err) {
-
-//     }
-// }
