@@ -46,7 +46,7 @@ exports.createOrder = (req, res) => {
 
         const paymentDetails = {
             payment_mode: payment.payment_mode,
-            payment_date: new Date(payment.payment_date),
+            payment_date: payment.payment_date,
             subtotal: payment.subtotal,
             discount: payment.discount,
             taxable_amount: taxable_amount,
@@ -61,37 +61,54 @@ exports.createOrder = (req, res) => {
         const {
             customer_name,
             customer_contact,
-            customer_email,
             customer_trn,
             vehicle_name,
             vehicle_number,
+            type,
             invoice_number,
             invoice_ref_number,
             service_rep
         } = req.body
 
-        if (!customer_name || !customer_contact || !customer_email || !vehicle_number || !vehicle_name || !invoice_number || !invoice_ref_number || !service_rep) {
-            return Response.sendFailedmsg(res, 'Please Fill All Fields')
+        if (customer_name == '' || customer_name == undefined){
+            return Response.sendFailedmsg(res, 'Name Is Required')
+        }
+        if (customer_contact == '' || customer_contact == undefined){
+            return Response.sendFailedmsg(res, 'Contact Is Required')
+        }
+        if (isNaN(customer_contact)){
+            return Response.sendFailedmsg(res, 'Invalid Contact')
+        }
+        if (customer_trn == '' || customer_trn == undefined){
+            return Response.sendFailedmsg(res, 'Customer TRN Is Required')
+        }
+        if (vehicle_name == '' || vehicle_name == undefined){
+            return Response.sendFailedmsg(res, 'Vehicle Name Is Required')
+        }
+        if (vehicle_number == '' || vehicle_number == undefined){
+            return Response.sendFailedmsg(res, 'Vehicle Number Is Required')
+        }
+        if (invoice_number == '' || invoice_number == undefined){
+            return Response.sendFailedmsg(res, 'Invalid Invoice Number')
+        }
+        if (invoice_ref_number == '' || invoice_ref_number == undefined){
+            return Response.sendFailedmsg(res, 'Invalid Invoice Reference Number')
+        }
+        if (service_rep == '' || service_rep == undefined){
+            return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
 
-        if (customer_name.match(AlphaRegEx) == null) {
+        if (customer_name.match(AlphaRegEx) == null || isNaN(customer_name) == false) {
             return Response.sendFailedmsg(res, 'Name Should Be Alphabetic')
-        }
-
-        if (!emailValidator.validate(customer_email)) {
-            return Response.sendFailedmsg(res, 'Name Should Be Alphabetic')
-        }
-
-
-
+        }    
 
         const order = new Order({
             customer_name: customer_name,
             customer_contact: customer_contact,
-            customer_email: customer_email,
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
             vehicle_number: vehicle_number,
+            type:type,
             service: serviceArray,
             wash_service: washserviceArray,
             invoice_number: invoice_number,
@@ -211,8 +228,33 @@ exports.orderReport = (req, res) => {
     }
 }
 
-// 6019053d9064a928c8bd57b0
+exports.getOrderDetails  = async(req, res) => {
 
+    try {
+       const today_net_total = await Order.aggregate([
+            {$match :{ order_date :{$gte:new Date(Date.now() - 24*60*60 * 1000)}}},
+            {$group : {_id:"$net_total",net_total:{$sum:"$payment.net_total"}}}
+        ])  
+ 
+        
+        const today_total_wash =   await  Order.estimatedDocumentCount({type:'wash'})
+        const today_total_service = await Order.estimatedDocumentCount({type:'service'})
+        const total_service =  await Order.find().estimatedDocumentCount()
+
+        const order_details = {
+            today_net_total:today_net_total,
+            today_total_wash:today_total_wash,
+            today_total_service:today_total_service,
+            total_service:total_service
+            
+        }
+        res.send(order_details)
+        // console.log(total_service)
+    }
+    catch(err) {
+        res.send([])
+    }
+}
 
 
 
