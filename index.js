@@ -3,13 +3,12 @@ const mongoose = require('mongoose')
 const url = 'mongodb://localhost/washbay'
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
-
-
-
+const cors = require('cors');
 
 
 const app = express()
-
+// cors
+app.use(cors())
 mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology: true, useFindAndModify: false})
 const con = mongoose.connection
 
