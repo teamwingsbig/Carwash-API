@@ -98,18 +98,19 @@ exports.createService = (req, res) => {
 exports.getService = (req, res) => {
     try{
         const type= req.query.type
+        const services = []
 
         if(type) {
-            Service.find({type:type,status:true}).then((brand)=>{
-                res.send(brand)
+            Service.find({type:type,status:true}).populate('brand.brand_id','brandName').then((service)=>{  
+                res.send(service)                
             })
             .catch(err=>{
                 res.send([])
             })
         }
         else {
-            Service.find({status:true}).then((brand)=>{
-                res.send(brand)
+            Service.find({status:true}).populate('brand.brand_id','brandName').then((service)=>{
+                res.send(service)
             })
             .catch(err=>{
                 res.send([])
@@ -124,7 +125,7 @@ exports.getService = (req, res) => {
 
 exports.getSingleService = (req, res) => {
     try{
-        Service.findById(req.params.id).then((data)=>{
+        Service.findById(req.params.id).populate('brand.brand_id','brandName').then((data)=>{
             res.send(data)
         })
         .catch(err=>{
@@ -237,3 +238,13 @@ exports.getVarientByBrand = (req, res) => {
     }
 }
  
+// exports.deleteVarient = (req, res) => {
+
+//     try {
+
+//     }
+    
+//     catch(err) {
+
+//     }
+// }
