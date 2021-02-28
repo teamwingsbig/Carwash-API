@@ -99,9 +99,7 @@ exports.createOrder = (req, res) => {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
 
-        if (customer_name.match(AlphaRegEx) == null || isNaN(customer_name) == false) {
-            return Response.sendFailedmsg(res, 'Name Should Be Alphabetic')
-        }    
+           
 
         const order = new Order({
             customer_name: customer_name,
