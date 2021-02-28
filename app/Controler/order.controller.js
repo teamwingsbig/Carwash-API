@@ -16,19 +16,26 @@ exports.createOrder = (req, res) => {
         const wash_service = req.body.wash_service
         const payment = req.body.payment
         const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
-        if (service) {
-            for (services of service) {
-                service_id = services.service_id,
-                    brand_id = services.brand_id,
-                    varient = services.varient
-            }
+ 
 
-            serviceArray.push({
-                service_id: services.service_id,
-                brand_id: services.brand_id,
-                varient: services.varient
-            })
+        if(service != undefined && service!= null) {
+            if (typeof(service) == String) {
+            let items = JSON.parse(service)
+            if (items.length > 0) {
+                for (services of items) {
+                    service_id = services.service_id,
+                        brand_id = services.brand_id,
+                        varient = services.varient
+                }
+    
+                serviceArray.push({
+                    service_id: services.service_id,
+                    brand_id: services.brand_id,
+                    varient: services.varient
+                })
+            } }
         }
+
 
         if (wash_service != undefined && wash_service != null) {
             let items = JSON.parse(wash_service)
