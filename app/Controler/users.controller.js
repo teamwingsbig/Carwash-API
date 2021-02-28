@@ -59,7 +59,7 @@ exports.getUsers = (req,res) => {
                     return Response.sendFailedmsg(res,'Authentication Failed')
                 }
                 else {
-                    return Response.sendSuccessmsg(res,'Authenticated!',{isAdmin:authuser.isadmin, email:authuser.username})
+                    return Response.sendSuccessmsg(res,'Authenticated!',{isAdmin:authuser.isadmin, email:authuser.username,_id:_id})
                 }
             })
             .catch(err => {
