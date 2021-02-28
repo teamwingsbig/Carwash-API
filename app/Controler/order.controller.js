@@ -30,18 +30,20 @@ exports.createOrder = (req, res) => {
             })
         }
 
-        if (wash_service.length > 0) {
-            for (wash_services of wash_service) {
-                service_id = wash_services.service_id
+        if (wash_service != undefined && wash_service != null) {
+            let items = JSON.parse(wash_service)
+            if (items.length > 0) {
+                for (wash_services of items) {
+                    service_id = wash_services.service_id
+                    washserviceArray.push({
+                        service_id: service_id
+                    })
+                }
 
-                washserviceArray.push({
-                    service_id: service_id
-                })
             }
-            
         }
-        console.log(washserviceArray)
 
+        // console.log(washserviceArray)
 
 
         const taxable_amount = parseFloat(payment.subtotal) - parseFloat(payment.discount)
@@ -74,32 +76,31 @@ exports.createOrder = (req, res) => {
             service_rep
         } = req.body
 
-        if (customer_name == '' || customer_name == undefined){
+        if (customer_name == '' || customer_name == undefined) {
             return Response.sendFailedmsg(res, 'Name Is Required')
         }
-        if (customer_contact == '' || customer_contact == undefined){
+        if (customer_contact == '' || customer_contact == undefined) {
             return Response.sendFailedmsg(res, 'Contact Is Required')
         }
-        if (isNaN(customer_contact)){
+        if (isNaN(customer_contact)) {
             return Response.sendFailedmsg(res, 'Invalid Contact')
         }
-        if (vehicle_name == '' || vehicle_name == undefined){
+        if (vehicle_name == '' || vehicle_name == undefined) {
             return Response.sendFailedmsg(res, 'Vehicle Name Is Required')
         }
-        if (vehicle_number == '' || vehicle_number == undefined){
+        if (vehicle_number == '' || vehicle_number == undefined) {
             return Response.sendFailedmsg(res, 'Vehicle Number Is Required')
         }
-        if (invoice_number == '' || invoice_number == undefined){
+        if (invoice_number == '' || invoice_number == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Invoice Number')
         }
-        if (invoice_ref_number == '' || invoice_ref_number == undefined){
+        if (invoice_ref_number == '' || invoice_ref_number == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Invoice Reference Number')
         }
-        if (service_rep == '' || service_rep == undefined){
+        if (service_rep == '' || service_rep == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
 
-           
 
         const order = new Order({
             customer_name: customer_name,
@@ -107,7 +108,7 @@ exports.createOrder = (req, res) => {
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
             vehicle_number: vehicle_number,
-            type:type,
+            type: type,
             service: serviceArray,
             wash_service: washserviceArray,
             invoice_number: invoice_number,
@@ -117,11 +118,11 @@ exports.createOrder = (req, res) => {
         })
 
         order.save().then((data) => {
-            return Response.sendSuccessmsg(res,'Order Created')
+            return Response.sendSuccessmsg(res, 'Order Created')
         })
-        .catch(err => {
-            return Response.sendFailedmsg(res,'Failed To Create Order!',err.message)
-        })
+            .catch(err => {
+                return Response.sendFailedmsg(res, 'Failed To Create Order!', err.message)
+            })
     } catch (err) {
         return Response.sendFailedmsg(res, 'Failed To Create Order!', err.message)
     }
@@ -227,30 +228,29 @@ exports.orderReport = (req, res) => {
     }
 }
 
-exports.getOrderDetails  = async(req, res) => {
+exports.getOrderDetails = async (req, res) => {
 
     try {
-       const today_net_total = await Order.aggregate([
-            {$match :{ order_date :{$gte:new Date(Date.now() - 24*60*60 * 1000)}}},
-            {$group : {_id:"$net_total",net_total:{$sum:"$payment.net_total"}}}
-        ])  
- 
-        
-        const today_total_wash =   await  Order.estimatedDocumentCount({type:'wash'})
-        const today_total_service = await Order.estimatedDocumentCount({type:'service'})
-        const total_service =  await Order.find().estimatedDocumentCount()
+        const today_net_total = await Order.aggregate([
+            {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}},
+            {$group: {_id: "$net_total", net_total: {$sum: "$payment.net_total"}}}
+        ])
+
+
+        const today_total_wash = await Order.estimatedDocumentCount({type: 'wash'})
+        const today_total_service = await Order.estimatedDocumentCount({type: 'service'})
+        const total_service = await Order.find().estimatedDocumentCount()
 
         const order_details = {
-            today_net_total:today_net_total,
-            today_total_wash:today_total_wash,
-            today_total_service:today_total_service,
-            total_service:total_service
-            
+            today_net_total: today_net_total,
+            today_total_wash: today_total_wash,
+            today_total_service: today_total_service,
+            total_service: total_service
+
         }
         res.send(order_details)
         // console.log(total_service)
-    }
-    catch(err) {
+    } catch (err) {
         res.send([])
     }
 }
