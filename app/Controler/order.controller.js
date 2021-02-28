@@ -30,14 +30,18 @@ exports.createOrder = (req, res) => {
             })
         }
 
-        if (wash_service) {
+        if (wash_service.length > 0) {
             for (wash_services of wash_service) {
                 service_id = wash_services.service_id
+
+                washserviceArray.push({
+                    service_id: service_id
+                })
             }
-            washserviceArray.push({
-                service_id: service_id
-            })
+            
         }
+        console.log(washserviceArray)
+
 
 
         const taxable_amount = parseFloat(payment.subtotal) - parseFloat(payment.discount)
@@ -78,9 +82,6 @@ exports.createOrder = (req, res) => {
         }
         if (isNaN(customer_contact)){
             return Response.sendFailedmsg(res, 'Invalid Contact')
-        }
-        if (customer_trn == '' || customer_trn == undefined){
-            return Response.sendFailedmsg(res, 'Customer TRN Is Required')
         }
         if (vehicle_name == '' || vehicle_name == undefined){
             return Response.sendFailedmsg(res, 'Vehicle Name Is Required')
