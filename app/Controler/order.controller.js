@@ -10,6 +10,9 @@ exports.createOrder = (req, res) => {
         const serviceArray = []
         const washserviceArray = []
 
+        let service_items
+        let wash_service_items
+
 
         const service = req.body.service
         const wash_service = req.body.wash_service
@@ -18,11 +21,12 @@ exports.createOrder = (req, res) => {
 
         if(service === undefined && wash_service === undefined ) {
             return Response.sendFailedmsg(res,'Please Specify Service Details')
-        }       
- 
+        }    
+        
+        
 
         if(service != undefined && service!= null ) {
-            let items = service == "String" ? JSON.parse(service) : service
+            let items = typeof(service) == "String" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
                     service_id = services.service_id,
@@ -43,7 +47,7 @@ exports.createOrder = (req, res) => {
         }
 
         if (wash_service != undefined && wash_service != null) {
-            let items = wash_service == "String" ? JSON.parse(wash_service) : wash_service
+            let items = typeof(wash_service) == "String" ? JSON.parse(wash_service) : wash_service
             if (items.length > 0) {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
