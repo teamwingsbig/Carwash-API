@@ -265,7 +265,7 @@ exports.getOrderDetails = async (req, res) => {
 
         }
         res.send(order_details)
-        // console.log(total_service)
+        console.log(order_details)
     } catch (err) {
         res.send([])
     }
