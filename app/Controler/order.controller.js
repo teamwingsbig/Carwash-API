@@ -42,7 +42,7 @@ exports.createOrder = (req, res) => {
         }
 
         if (wash_service != undefined && wash_service != null) {
-            let items = typeof(wash_service) == "String" ? JSON.parse(wash_service) : wash_service
+            let items = typeof(wash_service) == "string" ? JSON.parse(wash_service) : wash_service
             if (items.length > 0) {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
