@@ -257,8 +257,8 @@ exports.getOrderDetails = async (req, res) => {
         ])
 
 
-        const today_total_wash = await Order.estimatedDocumentCount({type: 'wash'})
-        const today_total_service = await Order.estimatedDocumentCount({type: 'service'})
+        const today_total_wash = await Order.estimatedDocumentCount({type: 'wash',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
+        const today_total_service = await Order.estimatedDocumentCount({type: 'service',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
         const total_service = await Order.find().estimatedDocumentCount()
 
         const order_details = {

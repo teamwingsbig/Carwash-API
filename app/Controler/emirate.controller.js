@@ -1,5 +1,5 @@
 const Emirate = require('../Models/emirates.model')
-const Response = require('../helper/response') 
+const Response = require('../helper/response')
 
 
 // post data
@@ -82,7 +82,6 @@ exports.getSingleEmirate = (req,res) =>{
 
 
 //  delete emirate (change status:false )
-
 exports.deleteEmirate = (req,res) => {
 
     try {
