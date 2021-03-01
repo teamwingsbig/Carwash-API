@@ -23,10 +23,9 @@ exports.createOrder = (req, res) => {
             return Response.sendFailedmsg(res,'Please Specify Service Details')
         }    
         
-        
 
         if(service != undefined && service!= null ) {
-            let items = typeof(service) == "String" ? JSON.parse(service) : service
+            let items = typeof(service) == "string" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
                     service_id = services.service_id,
