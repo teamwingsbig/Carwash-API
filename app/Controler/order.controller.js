@@ -6,7 +6,6 @@ exports.createOrder = (req, res) => {
 
     try {
 
-        const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
         const serviceArray = []
         const washserviceArray = []
@@ -15,30 +14,36 @@ exports.createOrder = (req, res) => {
         const service = req.body.service
         const wash_service = req.body.wash_service
         const payment = req.body.payment
-        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
+        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status); 
+
+        if(service === undefined && wash_service === undefined ) {
+            return Response.sendFailedmsg(res,'Please Specify Service Details')
+        }       
  
 
-        if(service != undefined && service!= null) {
-            if (typeof(service) == String) {
-            let items = JSON.parse(service)
+        if(service != undefined && service!= null ) {
+            let items = service == "String" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
                     service_id = services.service_id,
                         brand_id = services.brand_id,
                         varient = services.varient
-                }
-    
-                serviceArray.push({
-                    service_id: services.service_id,
-                    brand_id: services.brand_id,
-                    varient: services.varient
-                })
-            } }
+
+                        serviceArray.push({
+                            service_id: services.service_id,
+                            brand_id: services.brand_id,
+                            varient: services.varient
+                        })
+                } 
+                
+            }
+            else {
+                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } 
         }
 
-
         if (wash_service != undefined && wash_service != null) {
-            let items = JSON.parse(wash_service)
+            let items = wash_service == "String" ? JSON.parse(wash_service) : wash_service
             if (items.length > 0) {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
@@ -47,6 +52,9 @@ exports.createOrder = (req, res) => {
                     })
                 }
 
+            }
+            else {
+                return Response.sendFailedmsg(res,'Please Specify Service Details')
             }
         }
 
@@ -107,6 +115,7 @@ exports.createOrder = (req, res) => {
         if (service_rep == '' || service_rep == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
+        
 
 
         const order = new Order({
