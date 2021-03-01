@@ -28,14 +28,10 @@ exports.createOrder = (req, res) => {
             let items = typeof(service) == "string" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
-                    service_id = services.service_id,
-                        brand_id = services.brand_id,
-                        varient = services.varient
-
                         serviceArray.push({
                             service_id: services.service_id,
                             brand_id: services.brand_id,
-                            varient: services.varient
+                            varient: services.varient_id
                         })
                 } 
                 
