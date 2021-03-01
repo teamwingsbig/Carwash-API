@@ -44,18 +44,20 @@ exports.createServiceRep = (req, res) => {
             return Response.sendFailedmsg(res,'Password Mismatch')
         }
 
-        ServiceRep.findOne({password:password}).then((data) => {
-            if(data) {
-                return Response.sendFailedmsg(res,'Password Already In Use! Please Try With Another') 
+        ServiceRep.findOne({password:password}).then((password) => {
+            if(password) {
+                return Response.sendFailedmsg(res,'Password Already In Use! Please Try With Another')
+            }
+            else{
+                ServiceRep.findOne({passcode:passcode}).then((passcode) => {
+                    if(passcode) {
+                        return Response.sendFailedmsg(res,'Passcode Already In Use! Please Try With Another')
+                    }
+        
+                }) 
             }
         })
-        ServiceRep.findOne({passcode:passcode}).then((data) => {
-            if(data) {
-                return Response.sendFailedmsg(res,'Passcode Already In Use! Please Try With Another') 
-            }
-        })
-
-       
+      
 
         const servicerep =  new ServiceRep({
             name:name,
