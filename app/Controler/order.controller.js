@@ -272,5 +272,20 @@ exports.getOrderDetails = async (req, res) => {
     }
 }
 
+exports.getRecentOrders = (req, res) =>{
 
+    try {
+
+        Order.find().sort({_id:-1}).limit(30).then((orders) => {
+            res.send(orders)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+
+    catch(err) {
+        res.send([])
+    }
+}
 
