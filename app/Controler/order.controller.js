@@ -32,7 +32,10 @@ exports.createOrder = (req, res) => {
                             service_id: services.service_id,
                             brand_id: services.brand_id,
                             varient: services.varient_id,
-                            qty:services.qty
+                            price:services.price,
+                            qty:services.qty,
+                            tax_amount : services.tax,
+                            total_price:services.total
                         })
                 } 
                 
@@ -49,7 +52,10 @@ exports.createOrder = (req, res) => {
                     service_id = wash_services.service_id
                     washserviceArray.push({
                         service_id: service_id,
-                        qty:wash_services.qty
+                        price:wash_services.price,
+                        qty:wash_services.qty,
+                        tax_amount : wash_services.tax,
+                        total_price:wash_services.total
                     })
                 }
 
@@ -181,8 +187,12 @@ exports.orderReport = (req, res) => {
         const {start_date, end_date, service_rep} = req.body
         const {limit = 10, page = 1} = req.query
 
-        const startDate = new Date(start_date)
-        const endDate = new Date(end_date)
+        let startDate
+        let endDate
+
+
+         startDate = new Date(start_date)
+         endDate = new Date(end_date)
 
         if (start_date && end_date) {
             Order.find({order_date: {$gt: startDate, $lt: endDate}})
@@ -276,7 +286,7 @@ exports.getRecentOrders = (req, res) =>{
 
     try {
 
-        Order.find().sort({_id:-1}).limit(30).then((orders) => {
+        Order.find().populate('service.service_id','title').sort({_id:-1}).limit(30).then((orders) => {
             res.send(orders)
         })
         .catch(err => {
