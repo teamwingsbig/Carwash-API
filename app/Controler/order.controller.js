@@ -31,7 +31,8 @@ exports.createOrder = (req, res) => {
                         serviceArray.push({
                             service_id: services.service_id,
                             brand_id: services.brand_id,
-                            varient: services.varient_id
+                            varient: services.varient_id,
+                            qty:services.qty
                         })
                 } 
                 
@@ -47,7 +48,8 @@ exports.createOrder = (req, res) => {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
                     washserviceArray.push({
-                        service_id: service_id
+                        service_id: service_id,
+                        qty:wash_services.qty
                     })
                 }
 
@@ -83,10 +85,10 @@ exports.createOrder = (req, res) => {
             customer_contact,
             customer_trn,
             vehicle_name,
-            vehicle_number,
-            type,
+            vehicle_number,            
             invoice_number,
             invoice_ref_number,
+            type,
             service_rep
         } = req.body
 
