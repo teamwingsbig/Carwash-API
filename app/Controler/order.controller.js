@@ -68,18 +68,15 @@ exports.createOrder = (req, res) => {
         // console.log(washserviceArray)
 
 
-        const taxable_amount = parseFloat(payment.subtotal) - parseFloat(payment.discount)
-        const vat_total = parseFloat(payment.vat_total)
-        const net_total = taxable_amount + vat_total
 
         const paymentDetails = {
             payment_mode: payment.payment_mode,
             payment_date: payment.payment_date,
             subtotal: payment.subtotal,
             discount: payment.discount,
-            taxable_amount: taxable_amount,
-            vat_total: vat_total,
-            net_total: net_total,
+            taxable_amount: payment.taxable_amount,
+            vat_total: payment.vat_total,
+            net_total: payment.net_total,
             payment_status: status
         }
 
@@ -263,21 +260,27 @@ exports.getOrderDetails = async (req, res) => {
             {$group: {_id: "", net_total: {$sum: "$payment.net_total"}}}
         ])
 
-        const today_total_wash = await Order.estimatedDocumentCount({type: 'wash',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
-        const today_total_service = await Order.estimatedDocumentCount({type: 'service',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
-        const total_service = await Order.find().estimatedDocumentCount()
+        const today_total_wash = await Order.find({type: 'Wash',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}).countDocuments()
+        const today_total_service = await Order.find({type: 'Service',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}).countDocuments()
+        const total_service = await Order.find().countDocuments()
 
+        let daily_net_total
+        if(today_net_total === undefined) {
+            daily_net_total = 0
+        }
+        else {
+            daily_net_total = today_net_total[0].net_total
+        }
         const order_details = {
-            today_net_total: today_net_total[0].net_total,
+            today_net_total: daily_net_total,
             today_total_wash: today_total_wash,
             today_total_service: today_total_service,
             total_service: total_service
 
         }
         res.send(order_details)
-        console.log(order_details)
     } catch (err) {
-        res.send([])
+        res.send(err.message)
     }
 }
 
