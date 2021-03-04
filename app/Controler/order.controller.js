@@ -265,11 +265,11 @@ exports.getOrderDetails = async (req, res) => {
         const total_service = await Order.find().countDocuments()
 
         let daily_net_total
-        if(today_net_total === undefined) {
+        if(today_net_total === undefined || today_net_total == '') {
             daily_net_total = 0
         }
         else {
-            daily_net_total = today_net_total[0].net_total
+            daily_net_total = today_net_total
         }
         const order_details = {
             today_net_total: daily_net_total,
