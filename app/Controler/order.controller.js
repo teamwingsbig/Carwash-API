@@ -260,16 +260,15 @@ exports.getOrderDetails = async (req, res) => {
     try {
         const today_net_total = await Order.aggregate([
             {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}},
-            {$group: {_id: "$net_total", net_total: {$sum: "$payment.net_total"}}}
+            {$group: {_id: "", net_total: {$sum: "$payment.net_total"}}}
         ])
-
 
         const today_total_wash = await Order.estimatedDocumentCount({type: 'wash',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
         const today_total_service = await Order.estimatedDocumentCount({type: 'service',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}})
         const total_service = await Order.find().estimatedDocumentCount()
 
         const order_details = {
-            today_net_total: today_net_total,
+            today_net_total: today_net_total[0].net_total,
             today_total_wash: today_total_wash,
             today_total_service: today_total_service,
             total_service: total_service
@@ -299,3 +298,4 @@ exports.getRecentOrders = (req, res) =>{
     }
 }
 
+ 
