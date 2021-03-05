@@ -301,4 +301,79 @@ exports.getRecentOrders = (req, res) =>{
     }
 }
 
+exports.dailyGross =  (req, res) => {
+
+    try {
+        const daily_gross =   Order.aggregate([ 
+            {
+                $group :{
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$order_date" } },
+                    net_total: {$sum: "$payment.net_total"}
+                }
+            },
+            {
+                $sort: { _id: -1 }
+              },
+              { $limit : 7 }
+        ]).then((result) => {
+            res.send(result)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+    catch(err) {
+        res.send([])
+    }
+}
+
+exports.monthlyGross =  async (req, res) => {
+
+    try {
+        let monthly_gross_array = []
+        const monthObj = {
+            01:'Jan',
+            02:'Feb',
+            03:'Mar',
+            04:'Apr',
+            05:'May',
+            06:'June',
+            07:'July',
+            08:'Aug',
+            09:'Sep',
+            10:'Oct',
+            11:'Nov',
+            12:'Dec'
+        }
+        const monthly_gross = await Order.aggregate([ 
+            {
+                $group :
+                {
+                    _id: { $dateToString: { format: "%m", date: "$order_date", } },
+                    net_total: {$sum: "$payment.net_total"}
+                }
+            },
+                {
+                    $sort: { _id: -1 }
+                },
+                { 
+                    $limit : 5 
+                }
+        ])
+
+      for (key of monthly_gross ) {
+          const month_num = parseInt(key._id)
+          monthly_gross_array.push({
+              month:monthObj[month_num],
+              net_total:key.net_total
+          })
+      }
+    
+      res.send(monthly_gross_array)      
+        
+    }
+    catch(err) {
+        res.send([])
+    }
+}
  
