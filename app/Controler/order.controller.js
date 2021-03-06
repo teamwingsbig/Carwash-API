@@ -330,7 +330,9 @@ exports.dailyGross =  (req, res) => {
 exports.monthlyGross =  async (req, res) => {
 
     try {
-        let monthly_gross_array = []
+        // let monthly_gross_array = []
+        let month_arr = []
+        let net_total_arr = []
         const monthObj = {
             01:'Jan',
             02:'Feb',
@@ -361,15 +363,29 @@ exports.monthlyGross =  async (req, res) => {
                 }
         ])
 
+    //   for (key of monthly_gross ) {
+    //       const month_num = parseInt(key._id)
+    //       monthly_gross_array.push({
+    //           month:monthObj[month_num],
+    //           net_total:key.net_total
+    //       })
+    //   }
       for (key of monthly_gross ) {
           const month_num = parseInt(key._id)
-          monthly_gross_array.push({
-              month:monthObj[month_num],
-              net_total:key.net_total
-          })
+          month_arr.push(
+              monthObj[month_num]
+          )
+          net_total_arr.push(
+              key.net_total
+          )
+      }
+
+      let monthly_data = {
+          month:month_arr,
+          net_total:net_total_arr
       }
     
-      res.send(monthly_gross_array)      
+      res.send(monthly_data)      
         
     }
     catch(err) {
