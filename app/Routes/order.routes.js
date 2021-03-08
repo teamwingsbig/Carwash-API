@@ -9,4 +9,7 @@ module.exports = (app) => {
     app.get('/order',order.getOrders);
     app.get('/order/:id',order.getSingleOrder);
     app.post('/order/report',order.orderReport);
+    app.patch('/order/updateorder/:id',order.updateOrder)
+    app.delete('/order/deleteorder/:id',order.deleteOrder)
+
 }
