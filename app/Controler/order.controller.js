@@ -66,7 +66,7 @@ exports.createOrder = (req, res) => {
         }
 
         // console.log(washserviceArray)
-
+        const taxable_amount = parseFloat(payment.subtotal) - parseInt(payment.discount)
 
 
         const paymentDetails = {
@@ -74,7 +74,7 @@ exports.createOrder = (req, res) => {
             payment_date: payment.payment_date,
             subtotal: payment.subtotal,
             discount: payment.discount,
-            taxable_amount: payment.taxable_amount,
+            taxable_amount: taxable_amount,
             vat_total: payment.vat_total,
             net_total: payment.net_total,
             payment_status: status
@@ -393,3 +393,161 @@ exports.monthlyGross =  async (req, res) => {
     }
 }
  
+exports.updateOrder = (req, res) => {
+    try {
+
+        const serviceArray = []
+        const washserviceArray = []
+
+        let service_items
+        let wash_service_items
+
+
+        const service = req.body.service
+        const wash_service = req.body.wash_service
+        const payment = req.body.payment
+        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status); 
+
+        if(service === undefined && wash_service === undefined ) {
+            return Response.sendFailedmsg(res,'Please Specify Service Details')
+        }    
+        
+
+        if(service != undefined && service!= null ) {
+            let items = typeof(service) == "string" ? JSON.parse(service) : service
+            if (items.length > 0) {
+                for (services of items) {
+                        serviceArray.push({
+                            service_id: services.service_id,
+                            brand_id: services.brand_id,
+                            varient: services.varient_id,
+                            price:services.price,
+                            qty:services.qty,
+                            tax_amount : services.tax,
+                            total_price:services.total
+                        })
+                } 
+                
+            }
+            else {
+                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } 
+        }
+
+        if (wash_service != undefined && wash_service != null) {
+            let items = typeof(wash_service) == "string" ? JSON.parse(wash_service) : wash_service
+            if (items.length > 0) {
+                for (wash_services of items) {
+                    service_id = wash_services.service_id
+                    washserviceArray.push({
+                        service_id: service_id,
+                        price:wash_services.price,
+                        qty:wash_services.qty,
+                        tax_amount : wash_services.tax,
+                        total_price:wash_services.total
+                    })
+                }
+
+            }
+            else {
+                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            }
+        }
+
+        // console.log(washserviceArray)
+
+
+        const taxable_amount = parseFloat(payment.subtotal) - parseInt(payment.discount)
+
+        const paymentDetails = {
+            payment_mode: payment.payment_mode,
+            payment_date: payment.payment_date,
+            subtotal: payment.subtotal,
+            discount: payment.discount,
+            taxable_amount: taxable_amount,
+            vat_total: payment.vat_total,
+            net_total: payment.net_total,
+            payment_status: status
+        }
+
+        // res.send(paymentDetails)
+
+
+        const {
+            customer_name,
+            customer_contact,
+            customer_trn,
+            vehicle_name,
+            vehicle_number,            
+            invoice_number,
+            invoice_ref_number,
+            type,
+            service_rep
+        } = req.body
+
+        if (customer_name == '' || customer_name == undefined) {
+            return Response.sendFailedmsg(res, 'Name Is Required')
+        }
+        if (customer_contact == '' || customer_contact == undefined) {
+            return Response.sendFailedmsg(res, 'Contact Is Required')
+        }
+        if (isNaN(customer_contact)) {
+            return Response.sendFailedmsg(res, 'Invalid Contact')
+        }
+        if (vehicle_name == '' || vehicle_name == undefined) {
+            return Response.sendFailedmsg(res, 'Vehicle Name Is Required')
+        }
+        if (vehicle_number == '' || vehicle_number == undefined) {
+            return Response.sendFailedmsg(res, 'Vehicle Number Is Required')
+        }
+        if (invoice_number == '' || invoice_number == undefined) {
+            return Response.sendFailedmsg(res, 'Invalid Invoice Number')
+        }
+        if (invoice_ref_number == '' || invoice_ref_number == undefined) {
+            return Response.sendFailedmsg(res, 'Invalid Invoice Reference Number')
+        }
+        if (service_rep == '' || service_rep == undefined) {
+            return Response.sendFailedmsg(res, 'Invalid Service Rep')
+        }
+        
+
+
+        Order.findOneAndUpdate({_id:req.params.id},{
+            customer_name: customer_name,
+            customer_contact: customer_contact,
+            customer_trn: customer_trn,
+            vehicle_name: vehicle_name,
+            vehicle_number: vehicle_number,
+            type: type,
+            service: serviceArray,
+            wash_service: washserviceArray,
+            invoice_number: invoice_number,
+            invoice_ref_number: invoice_ref_number,
+            service_rep: service_rep,
+            payment: paymentDetails
+        }).then((data) =>{
+            return Response.sendSuccessmsg(res,'Order Updated')
+        })
+        .catch(err => {
+            return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
+        })
+       
+    }
+    catch(err) {
+        return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
+    }
+}
+
+exports.deleteOrder = (req, res) => {
+    try {
+        Order.deleteOne({_id:req.params.id}).then((result) => {
+            return Response.sendSuccessmsg(res,'Order Deleted')
+        })
+        .catch(err => {
+            return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
+        }) 
+    }
+    catch(err) {
+        return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
+    }
+}
