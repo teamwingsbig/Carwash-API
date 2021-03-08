@@ -9,6 +9,7 @@ const customerOrder = mongoose.Schema({
     vehicle_name :{ type:String,},
     vehicle_number :{ type:String, required:true},
     order_date : {type:Date, default:Date.now},
+    order_status : {type:Boolean, default:true},
     service:[{
             service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},        
             brand_id: {type:mongoose.Types.ObjectId, ref:"service_master.brand"},
@@ -20,7 +21,7 @@ const customerOrder = mongoose.Schema({
        
     }],
     wash_service:[{
-        service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},
+        service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},        
         price : {type:Number, required:true},
         qty: {type:Number, required:true},
         tax_amount : {type:Number, required:true},
