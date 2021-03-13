@@ -288,7 +288,17 @@ exports.getRecentOrders = (req, res) =>{
 
     try {
 
-        Order.find().populate('service.service_id','title').sort({_id:-1}).limit(30).then((orders) => {
+        const query = [
+            {
+                path:'service.service_id',
+                select:'title'
+            },
+            {
+                path:'wash_service.service_id',
+                select:'title'
+            }
+        ]
+        Order.find().populate(query).sort({_id:-1}).limit(30).then((orders) => {
             res.send(orders)
         })
         .catch(err => {
