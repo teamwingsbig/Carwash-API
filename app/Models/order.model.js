@@ -12,13 +12,13 @@ const customerOrder = mongoose.Schema({
     order_status : {type:Boolean, default:true},
     service:[{
             service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},        
-            brand_id: {type:mongoose.Types.ObjectId, ref:"service_master.brand"},
-            varient : {type:mongoose.Types.ObjectId, ref:"service_master.brand.varient"},
+            brand_id: {type:mongoose.Types.ObjectId, ref:"brand_master"},
+            varient : {type:mongoose.Types.ObjectId,ref:"service_master.brand.varients"},
+            varient_name : {type:String},
             price : {type:Number, required:true},
             qty: {type:Number, required:true},
             tax_amount : {type:Number, required:true},
             total_price: { type:Number, required:true}
-       
     }],
     wash_service:[{
         service_id:{type:mongoose.Types.ObjectId, ref:"service_master"},        

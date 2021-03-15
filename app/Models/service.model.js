@@ -8,8 +8,7 @@ const staffSchema = mongoose.Schema({
     type: {type: String, required: true},
     brand: [{
         brand_id: {type: mongoose.Types.ObjectId, ref: 'brand_master'}, // FK
-        varients: [{ 
-                           
+        varients: [{
                 name: {type: String},   
                 price : {type:Number}            
             }

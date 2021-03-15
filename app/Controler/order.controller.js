@@ -32,7 +32,8 @@ exports.createOrder = (req, res) => {
                             service_id: services.service_id,
                             brand_id: services.brand_id,
                             varient: services.varient_id,
-                            price:services.price,
+                            varient_name: services.varient_nameS,
+                            price:servivarient_nameces.price,
                             qty:services.qty,
                             tax_amount : services.tax,
                             total_price:services.total
@@ -285,7 +286,7 @@ exports.getOrderDetails = async (req, res) => {
 }
 
 exports.getRecentOrders = (req, res) =>{
-
+    console.log("Hello");
     try {
 
         const query = [
@@ -296,7 +297,15 @@ exports.getRecentOrders = (req, res) =>{
             {
                 path:'wash_service.service_id',
                 select:'title'
-            }
+            },
+            {
+                path:'service.brand_id',
+                select:'brandName'
+            },
+            // {
+            //     path:'service.varient',
+            //     select:'name'
+            // }
         ]
         Order.find().populate(query).sort({_id:-1}).limit(30).then((orders) => {
             res.send(orders)
