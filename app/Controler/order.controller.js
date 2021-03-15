@@ -32,7 +32,7 @@ exports.createOrder = (req, res) => {
                             service_id: services.service_id,
                             brand_id: services.brand_id,
                             varient: services.varient_id,
-                            varient_name: services.varient_nameS,
+                            varient_name: services.varient_name,
                             price:servivarient_nameces.price,
                             qty:services.qty,
                             tax_amount : services.tax,
