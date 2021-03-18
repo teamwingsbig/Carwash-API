@@ -257,7 +257,7 @@ exports.getOrderDetails = async (req, res) => {
 
     try {
         const today_net_total = await Order.aggregate([
-            {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}},
+            {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)},order_status:true}},
             {$group: {_id: "", net_total: {$sum: "$payment.net_total"}}}
         ])
 
@@ -307,7 +307,7 @@ exports.getRecentOrders = (req, res) =>{
             //     select:'name'
             // }
         ]
-        Order.find().populate(query).sort({_id:-1}).limit(30).then((orders) => {
+        Order.find({order_status:true}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
             res.send(orders)
         })
         .catch(err => {
@@ -327,7 +327,8 @@ exports.dailyGross =  (req, res) => {
             {
                 $group :{
                     _id: { $dateToString: { format: "%Y-%m-%d", date: "$order_date" } },
-                    net_total: {$sum: "$payment.net_total"}
+                    net_total: {$sum: "$payment.net_total"},
+                    order_status:true
                 }
             },
             {
@@ -371,7 +372,8 @@ exports.monthlyGross =  async (req, res) => {
                 $group :
                 {
                     _id: { $dateToString: { format: "%m", date: "$order_date", } },
-                    net_total: {$sum: "$payment.net_total"}
+                    net_total: {$sum: "$payment.net_total"},
+                    order_status:true
                 }
             },
                 {
@@ -559,7 +561,7 @@ exports.updateOrder = (req, res) => {
 
 exports.deleteOrder = (req, res) => {
     try {
-        Order.deleteOne({_id:req.params.id}).then((result) => {
+        Order.findOneAndUpdate({_id:req.params.id},{order_status:false}).then((result) => {
             return Response.sendSuccessmsg(res,'Order Deleted')
         })
         .catch(err => {
