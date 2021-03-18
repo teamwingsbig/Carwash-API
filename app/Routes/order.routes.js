@@ -10,6 +10,6 @@ module.exports = (app) => {
     app.get('/order/:id',order.getSingleOrder);
     app.post('/order/report',order.orderReport);
     app.put('/order/updateorder/:id',order.updateOrder)
-    app.delete('/order/deleteorder/:id',order.deleteOrder)
+    app.patch('/order/deleteorder/:id',order.deleteOrder)
 
 }
