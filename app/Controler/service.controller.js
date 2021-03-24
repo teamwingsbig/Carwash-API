@@ -23,12 +23,7 @@ exports.createService = (req, res) => {
     if(!type){
         return Response.sendFailedmsg(res,"Plese select servicetype")
     }
-    if(title.match(AlphaRegEx) == null){
-        return Response.sendFailedmsg(res,"title should be alphabetic")
-    }
-    if(type.match(AlphaRegEx) == null){
-        return Response.sendFailedmsg(res,"Service type should be alphabetic")
-    }
+
 
     if( type == "Service" && brand.length <=0 ){
         return Response.sendFailedmsg(res,"Specify brand details")        
