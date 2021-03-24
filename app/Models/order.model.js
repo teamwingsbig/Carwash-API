@@ -26,9 +26,7 @@ const customerOrder = mongoose.Schema({
         qty: {type:Number, required:true},
         tax_amount : {type:Number, required:true},
         total_price: { type:Number, required:true}
-
-    }
-    ], 
+    }],
     invoice_number :{ type:String, required:true},
     invoice_ref_number:{ type:String, required:true},
     type:{type:String,required:true},
