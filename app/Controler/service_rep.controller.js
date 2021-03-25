@@ -9,7 +9,6 @@ exports.createServiceRep = (req, res) => {
 
     try {
 
-        const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
         const { name, mobile, email, passcode, confirmpasscode, password, confirmpassword } = req.body
 
@@ -17,9 +16,7 @@ exports.createServiceRep = (req, res) => {
             return Response.sendFailedmsg(res,'Please Fill All Fields')
         }
         
-        if(name.match(AlphaRegEx) == null) {
-            return Response.sendFailedmsg(res,'Name Should Contain Only Alphabet')
-        }
+        
 
         if(isNaN(mobile) || mobile.length != 10) {
             return Response.sendFailedmsg(res,'Mobile Number Should Be Numeric And Of 10 Digit')
@@ -154,17 +151,13 @@ exports.updateServiceRep = (req, res) => {
 
     try {
 
-        const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
         const { name, mobile, email} = req.body
 
         if(!name || !mobile || !email || !passcode || !password) {
             return Response.sendFailedmsg(res,'Please Fill All Fields')
         }
-        
-        if(name.match(AlphaRegEx) == null) {
-            return Response.sendFailedmsg(res,'Name Should Contain Only Alphabet')
-        }
+       
 
         if(isNaN(mobile) || mobile.length != 10) {
             return Response.sendFailedmsg(res,'Mobile Number Should Be Numeric And Of 10 Digit')
