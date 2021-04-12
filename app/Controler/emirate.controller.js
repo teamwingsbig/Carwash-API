@@ -15,9 +15,9 @@ exports.createEmirate = (req, res) => {
             
             const emirate_category = category.emirate_category
             
-            if(emirate_category.match(AlphaRegEx) == null) {
-                return Response.sendFailedmsg(res,'Emirate Category Should Be In Alphabets')
-            }
+            // if(emirate_category.match(AlphaRegEx) == null) {
+            //     return Response.sendFailedmsg(res,'Emirate Category Should Be In Alphabets')
+            // }
             categoryArray.push({
                 emirate_category:emirate_category
             })
@@ -112,9 +112,9 @@ exports.updateEmirate = (req, res) => {
             
             const emirate_category = category.emirate_category
             
-            if(emirate_category.match(AlphaRegEx) == null) {
-                return Response.sendFailedmsg(res,'Emirate Category Should Be In Alphabets')
-            }
+            // if(emirate_category.match(AlphaRegEx) == null) {
+            //     return Response.sendFailedmsg(res,'Emirate Category Should Be In Alphabets')
+            // }
             categoryArray.push({
                 emirate_category:emirate_category
             })        
