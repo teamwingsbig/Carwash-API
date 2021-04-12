@@ -50,10 +50,10 @@ exports.createCompany = (req, res) => {
       if(!name || !address || !arabicName || !mobile || !landPhone || !currency || !trn || !tax || !vat || !termsandconditions ) {
         return Response.sendFailedmsg(res,'Please Fill All Fields')
       }
-
-      if(name.match(AlphaRegEx) == null) {
-        return Response.sendFailedmsg(res,'Name Should Only Contain Alphabets')
-      }
+      //
+      // if(name.match(AlphaRegEx) == null) {
+      //   return Response.sendFailedmsg(res,'Name Should Only Contain Alphabets')
+      // }
       if(mobile.match(mobRegex) == null) {
         return Response.sendFailedmsg(res,'Mobile Number Should Be Numeric And Of 10 Digits  ')
       }
