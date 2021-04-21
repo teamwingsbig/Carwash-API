@@ -572,3 +572,95 @@ exports.deleteOrder = (req, res) => {
         return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
     }
 }
+
+
+exports.searchByMobile = async(req, res) => {
+
+    try {
+  
+        const q = req.query.q
+        const srch = await Order.find({
+            customer_contact:{
+                $regex:new RegExp(q)
+            }
+        }).select('customer_name customer_contact customer_email').then((result)=>{
+            res.send(result)
+        }).catch(err =>{
+            res.send([])
+        })
+    }
+    catch(err) {
+            res.send(err.message)
+    }
+}
+
+exports.searchByVehicleNumber = async(req, res) => {
+
+    try {
+  
+        const q = req.query.q
+        const srch = await Order.find({
+            vehicle_number:{
+                $regex:new RegExp(q)
+            }
+        }).select('customer_name customer_contact customer_email vehicle_name vehicle_number').then((result)=>{
+            res.send(result)
+        }).catch(err =>{
+            res.send(err.message)
+        })
+    }
+    catch(err) {
+            res.send(err.message)
+    }
+}
+
+exports.reportByService = (req, res) =>{
+    try{
+        const {start_date, end_date, type} = req.body
+        const {limit = 10, page = 1} = req.query
+
+        let startDate
+        let endDate
+
+
+        startDate = new Date(start_date)
+        endDate = new Date(end_date)
+        console.log(type)
+        if (start_date && end_date) {
+            Order.find({order_date: {$gt: startDate, $lt: endDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+
+        } else if (start_date) {
+            Order.find({order_date: {$gt: startDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send([])
+                })
+        } else if (end_date) {
+            Order.find({order_date: {$lt: endDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+
+    }
+}
+    catch(err){
+        res.send(err.message)
+    }
+}
