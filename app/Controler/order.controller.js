@@ -574,20 +574,41 @@ exports.deleteOrder = (req, res) => {
 }
 
 
-exports.searchByMobile = async(req, res) => {
+exports.searchCustomer = async(req, res) => {
 
     try {
   
-        const q = req.query.q
-        const srch = await Order.find({
-            customer_contact:{
-                $regex:new RegExp(q)
-            }
-        }).select('customer_name customer_contact customer_email').then((result)=>{
-            res.send(result)
-        }).catch(err =>{
-            res.send([])
-        })
+        const queryvalue = req.query.queryvalue
+        if(queryvalue)
+        {
+
+            const srch = await Order.find({
+                $or:[
+                    {
+                        customer_contact:{$regex:new RegExp(queryvalue)},
+                                         
+                    },
+                    {
+                        vehicle_number:{$regex:new RegExp(queryvalue)}
+                    }
+                ]
+            },
+            ).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+            // .distinct('customer_contact')
+            // const srch = await Order.aggregate([
+            //     {$match: {customer_contact: new RegExp(queryvalue)}},
+            //     {$group: {_id: {customer_contact:'$customer_contact'}}},
+            // ])
+            .then((result)=>{
+                res.send(result)
+            })
+            
+            .catch(err =>{
+                res.send(err.message)
+            })
+        }
+       
+
     }
     catch(err) {
             res.send(err.message)
