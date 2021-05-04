@@ -1,6 +1,7 @@
 module.exports = (app) => {
     const order = require('../Controler/order.controller.js')
 
+    app.get('/order/filteredrecentorders',order.getFilteredRecentOrders)
     app.post('/order/reportByService',order.reportByService)
     app.get('/order/searchcustomer',order.searchCustomer)
     app.get('/order/orderDetails',order.getOrderDetails)

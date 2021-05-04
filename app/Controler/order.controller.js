@@ -286,7 +286,7 @@ exports.getOrderDetails = async (req, res) => {
 }
 
 exports.getRecentOrders = (req, res) =>{
-    console.log("Hello");
+    
     try {
 
         const query = [
@@ -683,5 +683,47 @@ exports.reportByService = (req, res) =>{
 }
     catch(err){
         res.send(err.message)
+    }
+}
+
+
+exports.getFilteredRecentOrders = (req, res)=>{
+    try {
+        const {start_date, end_date} = req.body
+
+        let startDate
+        let endDate
+
+
+        startDate = new Date(start_date)
+        endDate = new Date(end_date)
+        const query = [
+            {
+                path:'service.service_id',
+                select:'title'
+            },
+            {
+                path:'wash_service.service_id',
+                select:'title'
+            },
+            {
+                path:'service.brand_id',
+                select:'brandName'
+            },
+            // {
+            //     path:'service.varient',
+            //     select:'name'
+            // }
+        ]
+        Order.find({order_date: {$gt: startDate, $lt: endDate,order_status:true}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
+            res.send(orders)
+        })
+        .catch(err => {
+            res.send([])
+        })
+    }
+
+    catch(err) {
+        res.send([])
     }
 }
