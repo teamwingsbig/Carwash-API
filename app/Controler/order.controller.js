@@ -17,12 +17,12 @@ exports.createOrder = (req, res) => {
         const service = req.body.service
         const wash_service = req.body.wash_service
         const payment = req.body.payment
-        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status); 
+        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
 
         if(service === undefined && wash_service === undefined ) {
             return Response.sendFailedmsg(res,'Please Specify Service Details')
-        }    
-        
+        }
+
 
         if(service != undefined && service!= null ) {
             let items = typeof(service) == "string" ? JSON.parse(service) : service
@@ -38,12 +38,12 @@ exports.createOrder = (req, res) => {
                             tax_amount : services.tax,
                             total_price:services.total
                         })
-                } 
-                
+                }
+
             }
             else {
                 return Response.sendFailedmsg(res,'Please Specify Service Details')
-            } 
+            }
         }
 
         if (wash_service != undefined && wash_service != null) {
@@ -89,7 +89,7 @@ exports.createOrder = (req, res) => {
             customer_contact,
             customer_trn,
             vehicle_name,
-            vehicle_number,            
+            vehicle_number,
             invoice_number,
             invoice_ref_number,
             type,
@@ -120,7 +120,7 @@ exports.createOrder = (req, res) => {
         if (service_rep == '' || service_rep == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
-        
+
 
 
         const order = new Order({
@@ -286,7 +286,7 @@ exports.getOrderDetails = async (req, res) => {
 }
 
 exports.getRecentOrders = (req, res) =>{
-    
+
     try {
 
         const query = [
@@ -323,7 +323,7 @@ exports.getRecentOrders = (req, res) =>{
 exports.dailyGross =  (req, res) => {
 
     try {
-        const daily_gross =   Order.aggregate([ 
+        const daily_gross =   Order.aggregate([
             {
                 $group :{
                     _id: { $dateToString: { format: "%Y-%m-%d", date: "$order_date" } },
@@ -367,7 +367,7 @@ exports.monthlyGross =  async (req, res) => {
             11:'Nov',
             12:'Dec'
         }
-        const monthly_gross = await Order.aggregate([ 
+        const monthly_gross = await Order.aggregate([
             {
                 $group :
                 {
@@ -379,8 +379,8 @@ exports.monthlyGross =  async (req, res) => {
                 {
                     $sort: { _id: -1 }
                 },
-                { 
-                    $limit : 5 
+                {
+                    $limit : 5
                 }
         ])
 
@@ -405,15 +405,15 @@ exports.monthlyGross =  async (req, res) => {
           month:month_arr,
           net_total:net_total_arr
       }
-    
-      res.send(monthly_data)      
-        
+
+      res.send(monthly_data)
+
     }
     catch(err) {
         res.send([])
     }
 }
- 
+
 exports.updateOrder = (req, res) => {
     try {
 
@@ -427,12 +427,12 @@ exports.updateOrder = (req, res) => {
         const service = req.body.service
         const wash_service = req.body.wash_service
         const payment = req.body.payment
-        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status); 
+        const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
 
         if(service === undefined && wash_service === undefined ) {
             return Response.sendFailedmsg(res,'Please Specify Service Details')
-        }    
-        
+        }
+
 
         if(service != undefined && service!= null ) {
             let items = typeof(service) == "string" ? JSON.parse(service) : service
@@ -447,12 +447,12 @@ exports.updateOrder = (req, res) => {
                             tax_amount : services.tax,
                             total_price:services.total
                         })
-                } 
-                
+                }
+
             }
             else {
                 return Response.sendFailedmsg(res,'Please Specify Service Details')
-            } 
+            }
         }
 
         if (wash_service != undefined && wash_service != null) {
@@ -499,7 +499,7 @@ exports.updateOrder = (req, res) => {
             customer_contact,
             customer_trn,
             vehicle_name,
-            vehicle_number,            
+            vehicle_number,
             invoice_number,
             invoice_ref_number,
             type,
@@ -530,7 +530,7 @@ exports.updateOrder = (req, res) => {
         if (service_rep == '' || service_rep == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
-        
+
 
 
         Order.findOneAndUpdate({_id:req.params.id},{
@@ -552,7 +552,7 @@ exports.updateOrder = (req, res) => {
         .catch(err => {
             return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
         })
-       
+
     }
     catch(err) {
         return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
@@ -566,7 +566,7 @@ exports.deleteOrder = (req, res) => {
         })
         .catch(err => {
             return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
-        }) 
+        })
     }
     catch(err) {
         return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
@@ -577,7 +577,7 @@ exports.deleteOrder = (req, res) => {
 exports.searchCustomer = async(req, res) => {
 
     try {
-  
+
         const queryvalue = req.query.queryvalue
         if(queryvalue)
         {
@@ -586,7 +586,7 @@ exports.searchCustomer = async(req, res) => {
                 $or:[
                     {
                         customer_contact:{$regex:new RegExp(queryvalue)},
-                                         
+
                     },
                     {
                         vehicle_number:{$regex:new RegExp(queryvalue)}
@@ -602,12 +602,12 @@ exports.searchCustomer = async(req, res) => {
             .then((result)=>{
                 res.send(result)
             })
-            
+
             .catch(err =>{
                 res.send(err.message)
             })
         }
-       
+
 
     }
     catch(err) {
@@ -618,7 +618,7 @@ exports.searchCustomer = async(req, res) => {
 exports.searchByVehicleNumber = async(req, res) => {
 
     try {
-  
+
         const q = req.query.q
         const srch = await Order.find({
             vehicle_number:{
@@ -715,7 +715,7 @@ exports.getFilteredRecentOrders = (req, res)=>{
             //     select:'name'
             // }
         ]
-        Order.find({order_date: {$gt: startDate, $lt: endDate,order_status:true}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
+        Order.find({order_date: {$gt: startDate, $lt: endDate,order_status:true}}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
             res.send(orders)
         })
         .catch(err => {
