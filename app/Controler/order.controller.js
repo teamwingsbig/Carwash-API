@@ -637,18 +637,20 @@ exports.searchByVehicleNumber = async(req, res) => {
 
 exports.reportByService = (req, res) =>{
     try{
-        const {start_date, end_date, type} = req.body
+        const {start_date, end_date, service_type,service_rep} = req.body
         const {limit = 10, page = 1} = req.query
 
         let startDate
         let endDate
+        let query = {}
 
 
         startDate = new Date(start_date)
         endDate = new Date(end_date)
-        console.log(type)
+        
         if (start_date && end_date) {
-            Order.find({order_date: {$gt: startDate, $lt: endDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+            if(service_type === "All"){
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
                 .limit(limit * 1)
                 .skip((page - 1) * limit)
                 .then((data) => {
@@ -657,19 +659,23 @@ exports.reportByService = (req, res) =>{
                 .catch(err => {
                     res.send(err.message)
                 })
+            }
+            else{
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+            }
+            
 
         } else if (start_date) {
-            Order.find({order_date: {$gt: startDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send([])
-                })
-        } else if (end_date) {
-            Order.find({order_date: {$lt: endDate},type:type}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+            if(service_type === "All"){
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
                 .limit(limit * 1)
                 .skip((page - 1) * limit)
                 .then((data) => {
@@ -678,6 +684,41 @@ exports.reportByService = (req, res) =>{
                 .catch(err => {
                     res.send(err.message)
                 })
+            }
+            else{
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+            }
+        } else if (end_date) {
+            if(service_type === "All"){
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+            }
+            else{
+                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .then((data) => {
+                    res.send(data)
+                })
+                .catch(err => {
+                    res.send(err.message)
+                })
+            }
 
     }
 }
