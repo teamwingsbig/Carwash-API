@@ -1,6 +1,7 @@
 const Order = require('../Models/order.model')
 const Response = require('../helper/response')
 const emailValidator = require('email-validator')
+const mongoose = require('mongoose')
 
 exports.createOrder = (req, res) => {
 
@@ -19,50 +20,48 @@ exports.createOrder = (req, res) => {
         const payment = req.body.payment
         const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
 
-        if(service === undefined && wash_service === undefined ) {
-            return Response.sendFailedmsg(res,'Please Specify Service Details')
+        if (service === undefined && wash_service === undefined) {
+            return Response.sendFailedmsg(res, 'Please Specify Service Details')
         }
 
 
-        if(service != undefined && service!= null ) {
-            let items = typeof(service) == "string" ? JSON.parse(service) : service
+        if (service != undefined && service != null) {
+            let items = typeof (service) == "string" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
-                        serviceArray.push({
-                            service_id: services.service_id,
-                            brand_id: services.brand_id,
-                            varient: services.varient_id,
-                            varient_name: services.varient_name,
-                            price:services.price,
-                            qty:services.qty,
-                            tax_amount : services.tax,
-                            total_price:services.total
-                        })
+                    serviceArray.push({
+                        service_id: services.service_id,
+                        brand_id: services.brand_id,
+                        varient: services.varient_id,
+                        varient_name: services.varient_name,
+                        price: services.price,
+                        qty: services.qty,
+                        tax_amount: services.tax,
+                        total_price: services.total
+                    })
                 }
 
-            }
-            else {
-                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } else {
+                return Response.sendFailedmsg(res, 'Please Specify Service Details')
             }
         }
 
         if (wash_service != undefined && wash_service != null) {
-            let items = typeof(wash_service) == "string" ? JSON.parse(wash_service) : wash_service
+            let items = typeof (wash_service) == "string" ? JSON.parse(wash_service) : wash_service
             if (items.length > 0) {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
                     washserviceArray.push({
                         service_id: service_id,
-                        price:wash_services.price,
-                        qty:wash_services.qty,
-                        tax_amount : wash_services.tax,
-                        total_price:wash_services.total
+                        price: wash_services.price,
+                        qty: wash_services.qty,
+                        tax_amount: wash_services.tax,
+                        total_price: wash_services.total
                     })
                 }
 
-            }
-            else {
-                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } else {
+                return Response.sendFailedmsg(res, 'Please Specify Service Details')
             }
         }
 
@@ -120,7 +119,6 @@ exports.createOrder = (req, res) => {
         if (service_rep == '' || service_rep == undefined) {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
-
 
 
         const order = new Order({
@@ -189,8 +187,8 @@ exports.orderReport = (req, res) => {
         let endDate
 
 
-         startDate = new Date(start_date)
-         endDate = new Date(end_date)
+        startDate = new Date(start_date)
+        endDate = new Date(end_date)
 
         if (start_date && end_date) {
             Order.find({order_date: {$gt: startDate, $lt: endDate}})
@@ -257,19 +255,24 @@ exports.getOrderDetails = async (req, res) => {
 
     try {
         const today_net_total = await Order.aggregate([
-            {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)},order_status:true}},
+            {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}, order_status: true}},
             {$group: {_id: "", net_total: {$sum: "$payment.net_total"}}}
         ])
 
-        const today_total_wash = await Order.find({type: 'Wash',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}).countDocuments()
-        const today_total_service = await Order.find({type: 'Service',order_date:{$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}}).countDocuments()
+        const today_total_wash = await Order.find({
+            type: 'Wash',
+            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+        }).countDocuments()
+        const today_total_service = await Order.find({
+            type: 'Service',
+            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+        }).countDocuments()
         const total_service = await Order.find().countDocuments()
 
         let daily_net_total
-        if(today_net_total === undefined || today_net_total == '') {
+        if (today_net_total === undefined || today_net_total == '') {
             daily_net_total = 0
-        }
-        else {
+        } else {
             daily_net_total = today_net_total
         }
         const order_details = {
@@ -285,131 +288,192 @@ exports.getOrderDetails = async (req, res) => {
     }
 }
 
-exports.getRecentOrders = (req, res) =>{
+exports.getRecentOrders = (req, res) => {
 
     try {
 
-        const query = [
+        const paymentType = req.query.paymentType == undefined ? false : JSON.parse(req.query.paymentType)
+        const orderType = req.query.orderType == undefined ? false : JSON.parse(req.query.orderType)
+        const salesmen = req.query.salesmen == undefined ? false : JSON.parse(req.query.salesmen)
+
+        let querey = {
+            order_status: true,
+            order_date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+        };
+        if (paymentType) {
+            querey = {...querey, 'payment.payment_mode': paymentType}
+        }
+        if (orderType) {
+            querey = {...querey, type: orderType}
+        }
+        if (salesmen) {
+            querey = {...querey, service_rep: mongoose.Types.ObjectId(salesmen)}
+        }
+        const populateQuerey = [
             {
-                path:'service.service_id',
-                select:'title'
+                path: 'service.service_id',
+                select: 'title'
             },
             {
-                path:'wash_service.service_id',
-                select:'title'
+                path: 'wash_service.service_id',
+                select: 'title'
             },
             {
-                path:'service.brand_id',
-                select:'brandName'
+                path: 'service.brand_id',
+                select: 'brandName'
             },
             // {
             //     path:'service.varient',
             //     select:'name'
             // }
         ]
-        Order.find({order_status:true,order_date:new Date(Date.now() - 24 * 60 * 60 * 1000)}).populate(query).sort({_id:-1}).then((orders) => {
+        Order.find(querey).populate(populateQuerey).sort({_id: -1}).then((orders) => {
             res.send(orders)
         })
-        .catch(err => {
-            res.send([])
-        })
-    }
-
-    catch(err) {
+            .catch(err => {
+                res.send([])
+            })
+    } catch (err) {
         res.send([])
     }
 }
 
-exports.dailyGross =  (req, res) => {
+
+exports.getRecentOrdersBk = (req, res) => {
 
     try {
-        const daily_gross =   Order.aggregate([
+
+        const query = [
             {
-                $group :{
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$order_date" } },
+                path: 'service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'wash_service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'service.brand_id',
+                select: 'brandName'
+            },
+            // {
+            //     path:'service.varient',
+            //     select:'name'
+            // }
+        ]
+        Order.find({
+            order_status: true,
+            order_date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+        }).populate(query).sort({_id: -1}).then((orders) => {
+            res.send(orders)
+        })
+            .catch(err => {
+                res.send([])
+            })
+    } catch (err) {
+        res.send([])
+    }
+}
+
+exports.dailyGross = (req, res) => {
+
+    try {
+        const daily_gross = Order.aggregate([
+            {
+                $group: {
+                    _id: {$dateToString: {format: "%Y-%m-%d", date: "$order_date"}},
                     net_total: {$sum: "$payment.net_total"},
-                    order_status:true
+                    order_status: true
                 }
             },
             {
-                $sort: { _id: -1 }
-              },
-              { $limit : 7 }
+                $sort: {_id: -1}
+            },
+            {$limit: 7}
         ]).then((result) => {
             res.send(result)
         })
-        .catch(err => {
-            res.send([])
-        })
-    }
-    catch(err) {
+            .catch(err => {
+                res.send([])
+            })
+    } catch (err) {
         res.send([])
     }
 }
 
-exports.monthlyGross =  async (req, res) => {
+exports.monthlyGross = async (req, res) => {
 
     try {
         // let monthly_gross_array = []
         let month_arr = []
         let net_total_arr = []
         const monthObj = {
-            01:'Jan',
-            02:'Feb',
-            03:'Mar',
-            04:'Apr',
-            05:'May',
-            06:'June',
-            07:'July',
-            08:'Aug',
-            09:'Sep',
-            10:'Oct',
-            11:'Nov',
-            12:'Dec'
-        }
+            01: 'Jan',
+            02: 'Feb',
+            03: 'Mar',
+            04: 'Apr',
+            05: 'May',
+            06: 'June',
+            07: 'July',
+            08
+    :
+        'Aug',
+            0
+        9
+    :
+        'Sep',
+            10
+    :
+        'Oct',
+            11
+    :
+        'Nov',
+            12
+    :
+        'Dec'
+    }
         const monthly_gross = await Order.aggregate([
             {
-                $group :
-                {
-                    _id: { $dateToString: { format: "%m", date: "$order_date", } },
-                    net_total: {$sum: "$payment.net_total"},
-                    order_status:true
-                }
+                $group:
+                    {
+                        _id: {$dateToString: {format: "%m", date: "$order_date",}},
+                        net_total: {$sum: "$payment.net_total"},
+                        order_status: true
+                    }
             },
-                {
-                    $sort: { _id: -1 }
-                },
-                {
-                    $limit : 5
-                }
+            {
+                $sort: {_id: -1}
+            },
+            {
+                $limit: 5
+            }
         ])
 
-    //   for (key of monthly_gross ) {
-    //       const month_num = parseInt(key._id)
-    //       monthly_gross_array.push({
-    //           month:monthObj[month_num],
-    //           net_total:key.net_total
-    //       })
-    //   }
-      for (key of monthly_gross ) {
-          const month_num = parseInt(key._id)
-          month_arr.push(
-              monthObj[month_num]
-          )
-          net_total_arr.push(
-              key.net_total
-          )
-      }
+        //   for (key of monthly_gross ) {
+        //       const month_num = parseInt(key._id)
+        //       monthly_gross_array.push({
+        //           month:monthObj[month_num],
+        //           net_total:key.net_total
+        //       })
+        //   }
+        for (key of monthly_gross) {
+            const month_num = parseInt(key._id)
+            month_arr.push(
+                monthObj[month_num]
+            )
+            net_total_arr.push(
+                key.net_total
+            )
+        }
 
-      let monthly_data = {
-          month:month_arr,
-          net_total:net_total_arr
-      }
+        let monthly_data = {
+            month: month_arr,
+            net_total: net_total_arr
+        }
 
-      res.send(monthly_data)
+        res.send(monthly_data)
 
-    }
-    catch(err) {
+    } catch (err) {
         res.send([])
     }
 }
@@ -429,49 +493,47 @@ exports.updateOrder = (req, res) => {
         const payment = req.body.payment
         const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
 
-        if(service === undefined && wash_service === undefined ) {
-            return Response.sendFailedmsg(res,'Please Specify Service Details')
+        if (service === undefined && wash_service === undefined) {
+            return Response.sendFailedmsg(res, 'Please Specify Service Details')
         }
 
 
-        if(service != undefined && service!= null ) {
-            let items = typeof(service) == "string" ? JSON.parse(service) : service
+        if (service != undefined && service != null) {
+            let items = typeof (service) == "string" ? JSON.parse(service) : service
             if (items.length > 0) {
                 for (services of items) {
-                        serviceArray.push({
-                            service_id: services.service_id,
-                            brand_id: services.brand_id,
-                            varient: services.varient_id,
-                            price:services.price,
-                            qty:services.qty,
-                            tax_amount : services.tax,
-                            total_price:services.total
-                        })
+                    serviceArray.push({
+                        service_id: services.service_id,
+                        brand_id: services.brand_id,
+                        varient: services.varient_id,
+                        price: services.price,
+                        qty: services.qty,
+                        tax_amount: services.tax,
+                        total_price: services.total
+                    })
                 }
 
-            }
-            else {
-                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } else {
+                return Response.sendFailedmsg(res, 'Please Specify Service Details')
             }
         }
 
         if (wash_service != undefined && wash_service != null) {
-            let items = typeof(wash_service) == "string" ? JSON.parse(wash_service) : wash_service
+            let items = typeof (wash_service) == "string" ? JSON.parse(wash_service) : wash_service
             if (items.length > 0) {
                 for (wash_services of items) {
                     service_id = wash_services.service_id
                     washserviceArray.push({
                         service_id: service_id,
-                        price:wash_services.price,
-                        qty:wash_services.qty,
-                        tax_amount : wash_services.tax,
-                        total_price:wash_services.total
+                        price: wash_services.price,
+                        qty: wash_services.qty,
+                        tax_amount: wash_services.tax,
+                        total_price: wash_services.total
                     })
                 }
 
-            }
-            else {
-                return Response.sendFailedmsg(res,'Please Specify Service Details')
+            } else {
+                return Response.sendFailedmsg(res, 'Please Specify Service Details')
             }
         }
 
@@ -532,8 +594,7 @@ exports.updateOrder = (req, res) => {
         }
 
 
-
-        Order.findOneAndUpdate({_id:req.params.id},{
+        Order.findOneAndUpdate({_id: req.params.id}, {
             customer_name: customer_name,
             customer_contact: customer_contact,
             customer_trn: customer_trn,
@@ -546,98 +607,93 @@ exports.updateOrder = (req, res) => {
             invoice_ref_number: invoice_ref_number,
             service_rep: service_rep,
             payment: paymentDetails
-        }).then((data) =>{
-            return Response.sendSuccessmsg(res,'Order Updated')
+        }).then((data) => {
+            return Response.sendSuccessmsg(res, 'Order Updated')
         })
-        .catch(err => {
-            return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
-        })
+            .catch(err => {
+                return Response.sendFailedmsg(res, 'Failed To Update Order', err.message)
+            })
 
-    }
-    catch(err) {
-        return Response.sendFailedmsg(res,'Failed To Update Order', err.message)
+    } catch (err) {
+        return Response.sendFailedmsg(res, 'Failed To Update Order', err.message)
     }
 }
 
 exports.deleteOrder = (req, res) => {
     try {
-        Order.findOneAndUpdate({_id:req.params.id},{order_status:false}).then((result) => {
-            return Response.sendSuccessmsg(res,'Order Deleted')
+        Order.findOneAndUpdate({_id: req.params.id}, {order_status: false}).then((result) => {
+            return Response.sendSuccessmsg(res, 'Order Deleted')
         })
-        .catch(err => {
-            return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
-        })
-    }
-    catch(err) {
-        return Response.sendFailedmsg(res,'Failed To Delete Order', err.message)
+            .catch(err => {
+                return Response.sendFailedmsg(res, 'Failed To Delete Order', err.message)
+            })
+    } catch (err) {
+        return Response.sendFailedmsg(res, 'Failed To Delete Order', err.message)
     }
 }
 
 
-exports.searchCustomer = async(req, res) => {
+exports.searchCustomer = async (req, res) => {
 
     try {
 
         const queryvalue = req.query.queryvalue
-        if(queryvalue)
-        {
+        if (queryvalue) {
 
             const srch = await Order.find({
-                $or:[
-                    {
-                        customer_contact:{$regex:new RegExp(queryvalue)},
+                    $or: [
+                        {
+                            customer_contact: {$regex: new RegExp(queryvalue)},
 
-                    },
-                    {
-                        vehicle_number:{$regex:new RegExp(queryvalue)}
-                    }
-                ]
-            },
+                        },
+                        {
+                            vehicle_number: {$regex: new RegExp(queryvalue)}
+                        }
+                    ]
+                },
             ).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-            // .distinct('customer_contact')
-            // const srch = await Order.aggregate([
-            //     {$match: {customer_contact: new RegExp(queryvalue)}},
-            //     {$group: {_id: {customer_contact:'$customer_contact'}}},
-            // ])
-            .then((result)=>{
-                res.send(result)
-            })
+                // .distinct('customer_contact')
+                // const srch = await Order.aggregate([
+                //     {$match: {customer_contact: new RegExp(queryvalue)}},
+                //     {$group: {_id: {customer_contact:'$customer_contact'}}},
+                // ])
+                .then((result) => {
+                    res.send(result)
+                })
 
-            .catch(err =>{
-                res.send(err.message)
-            })
+                .catch(err => {
+                    res.send(err.message)
+                })
         }
 
 
-    }
-    catch(err) {
-            res.send(err.message)
+    } catch (err) {
+        res.send(err.message)
     }
 }
 
-exports.searchByVehicleNumber = async(req, res) => {
+exports.searchByVehicleNumber = async (req, res) => {
 
     try {
 
         const q = req.query.q
         const srch = await Order.find({
-            vehicle_number:{
-                $regex:new RegExp(q)
+            vehicle_number: {
+                $regex: new RegExp(q)
             }
-        }).select('customer_name customer_contact customer_email vehicle_name vehicle_number').then((result)=>{
+        }).select('customer_name customer_contact customer_email vehicle_name vehicle_number').then((result) => {
             res.send(result)
-        }).catch(err =>{
+        }).catch(err => {
             res.send(err.message)
         })
-    }
-    catch(err) {
-            res.send(err.message)
+    } catch (err) {
+        res.send(err.message)
     }
 }
 
-exports.reportByService = (req, res) =>{
-    try{
-        const {start_date, end_date, service_type,service_rep} = req.body
+exports.reportByService = (req, res) => {
+    try {
+        const {start_date, end_date, service_type, service_rep} = req.body
         const {limit = 10, page = 1} = req.query
 
         let startDate
@@ -647,88 +703,122 @@ exports.reportByService = (req, res) =>{
 
         startDate = new Date(start_date)
         endDate = new Date(end_date)
-        
+
         if (start_date && end_date) {
-            if(service_type === "All"){
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
             }
-            else{
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
-            }
-            
+
 
         } else if (start_date) {
-            if(service_type === "All"){
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
-            }
-            else{
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
             }
         } else if (end_date) {
-            if(service_type === "All"){
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
             }
-            else{
-                Order.find({order_date: {$gt: startDate, $lt: endDate,service_rep:service_rep,type:service_type}}).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send(err.message)
-                })
-            }
-
-    }
-}
-    catch(err){
+        }
+    } catch (err) {
         res.send(err.message)
     }
 }
 
 
-exports.getFilteredRecentOrders = (req, res)=>{
+exports.getFilteredRecentOrders = (req, res) => {
     try {
         const {start_date, end_date} = req.body
 
@@ -740,31 +830,35 @@ exports.getFilteredRecentOrders = (req, res)=>{
         endDate = new Date(end_date)
         const query = [
             {
-                path:'service.service_id',
-                select:'title'
+                path: 'service.service_id',
+                select: 'title'
             },
             {
-                path:'wash_service.service_id',
-                select:'title'
+                path: 'wash_service.service_id',
+                select: 'title'
             },
             {
-                path:'service.brand_id',
-                select:'brandName'
+                path: 'service.brand_id',
+                select: 'brandName'
             },
             // {
             //     path:'service.varient',
             //     select:'name'
             // }
         ]
-        Order.find({order_date: {$gt: startDate, $lt: endDate,order_status:true}}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
+        Order.find({
+            order_date: {
+                $gt: startDate,
+                $lt: endDate,
+                order_status: true
+            }
+        }).populate(query).sort({_id: -1}).limit(30).then((orders) => {
             res.send(orders)
         })
-        .catch(err => {
-            res.send([])
-        })
-    }
-
-    catch(err) {
+            .catch(err => {
+                res.send([])
+            })
+    } catch (err) {
         res.send([])
     }
 }
