@@ -289,16 +289,21 @@ exports.getOrderDetails = async (req, res) => {
 }
 
 exports.getRecentOrders = (req, res) => {
-
     try {
-
-        const paymentType = req.query.paymentType == undefined ? false : JSON.parse(req.query.paymentType)
-        const orderType = req.query.orderType == undefined ? false : JSON.parse(req.query.orderType)
-        const salesmen = req.query.salesmen == undefined ? false : JSON.parse(req.query.salesmen)
-
+        const paymentType = req.query.paymentType == 'false' ? JSON.parse(false) : req.query.paymentType
+        const orderType = req.query.orderType == 'false' ? JSON.parse(false) : req.query.orderType
+        const salesmen = req.query.salesmen == 'false' ? JSON.parse(false) : req.query.salesmen
+        let date = Date.now();
+        let searchDateFrom = new Date(date).setHours(0);
+        let searchDateTo = new Date(date).setDate(new Date(date).getDate() + 1)
+        searchDateTo = new Date(searchDateTo).setHours(0);
         let querey = {
             order_status: true,
-            order_date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+            order_date: {
+                $gte: searchDateFrom,
+                $lt: searchDateTo
+            }
+
         };
         if (paymentType) {
             querey = {...querey, 'payment.payment_mode': paymentType}
@@ -334,6 +339,7 @@ exports.getRecentOrders = (req, res) => {
                 res.send([])
             })
     } catch (err) {
+        console.log(err.message)
         res.send([])
     }
 }
@@ -401,82 +407,82 @@ exports.dailyGross = (req, res) => {
     }
 }
 
-exports.monthlyGross = async (req, res) => {
-
-    try {
-        // let monthly_gross_array = []
-        let month_arr = []
-        let net_total_arr = []
-        const monthObj = {
-            01: 'Jan',
-            02: 'Feb',
-            03: 'Mar',
-            04: 'Apr',
-            05: 'May',
-            06: 'June',
-            07: 'July',
-            08
-    :
-        'Aug',
-            0
-        9
-    :
-        'Sep',
-            10
-    :
-        'Oct',
-            11
-    :
-        'Nov',
-            12
-    :
-        'Dec'
-    }
-        const monthly_gross = await Order.aggregate([
-            {
-                $group:
-                    {
-                        _id: {$dateToString: {format: "%m", date: "$order_date",}},
-                        net_total: {$sum: "$payment.net_total"},
-                        order_status: true
-                    }
-            },
-            {
-                $sort: {_id: -1}
-            },
-            {
-                $limit: 5
-            }
-        ])
-
-        //   for (key of monthly_gross ) {
-        //       const month_num = parseInt(key._id)
-        //       monthly_gross_array.push({
-        //           month:monthObj[month_num],
-        //           net_total:key.net_total
-        //       })
-        //   }
-        for (key of monthly_gross) {
-            const month_num = parseInt(key._id)
-            month_arr.push(
-                monthObj[month_num]
-            )
-            net_total_arr.push(
-                key.net_total
-            )
-        }
-
-        let monthly_data = {
-            month: month_arr,
-            net_total: net_total_arr
-        }
-
-        res.send(monthly_data)
-
-    } catch (err) {
-        res.send([])
-    }
-}
+// exports.monthlyGross = async (req, res) => {
+//
+//     try {
+//         // let monthly_gross_array = []
+//         let month_arr = []
+//         let net_total_arr = []
+//         const monthObj = {
+//             01: 'Jan',
+//             02: 'Feb',
+//             03: 'Mar',
+//             04: 'Apr',
+//             05: 'May',
+//             06: 'June',
+//             07: 'July',
+//             08
+//     :
+//         'Aug',
+//             0
+//         9
+//     :
+//         'Sep',
+//             10
+//     :
+//         'Oct',
+//             11
+//     :
+//         'Nov',
+//             12
+//     :
+//         'Dec'
+//     }
+//         const monthly_gross = await Order.aggregate([
+//             {
+//                 $group:
+//                     {
+//                         _id: {$dateToString: {format: "%m", date: "$order_date",}},
+//                         net_total: {$sum: "$payment.net_total"},
+//                         order_status: true
+//                     }
+//             },
+//             {
+//                 $sort: {_id: -1}
+//             },
+//             {
+//                 $limit: 5
+//             }
+//         ])
+//
+//         //   for (key of monthly_gross ) {
+//         //       const month_num = parseInt(key._id)
+//         //       monthly_gross_array.push({
+//         //           month:monthObj[month_num],
+//         //           net_total:key.net_total
+//         //       })
+//         //   }
+//         for (key of monthly_gross) {
+//             const month_num = parseInt(key._id)
+//             month_arr.push(
+//                 monthObj[month_num]
+//             )
+//             net_total_arr.push(
+//                 key.net_total
+//             )
+//         }
+//
+//         let monthly_data = {
+//             month: month_arr,
+//             net_total: net_total_arr
+//         }
+//
+//         res.send(monthly_data)
+//
+//     } catch (err) {
+//         res.send([])
+//     }
+// }
 
 exports.updateOrder = (req, res) => {
     try {
