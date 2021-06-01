@@ -1,6 +1,7 @@
 module.exports = (app) => {
     const order = require('../Controler/order.controller.js')
 
+    app.get('/order/report',order.orderReport);
     app.get('/order/filteredrecentorders',order.getFilteredRecentOrders)
     app.post('/order/reportByService',order.reportByService)
     app.get('/order/searchcustomer',order.searchCustomer)
@@ -11,7 +12,6 @@ module.exports = (app) => {
     app.post('/order',order.createOrder);
     app.get('/order',order.getOrders);
     app.get('/order/:id',order.getSingleOrder);
-    app.post('/order/report',order.orderReport);
     app.put('/order/updateorder/:id',order.updateOrder)
     app.patch('/order/deleteorder/:id',order.deleteOrder)
     

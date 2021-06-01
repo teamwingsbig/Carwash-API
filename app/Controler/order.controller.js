@@ -179,74 +179,64 @@ exports.getSingleOrder = (req, res) => {
 
 exports.orderReport = (req, res) => {
     try {
-
-        const {start_date, end_date, service_rep} = req.body
         const {limit = 10, page = 1} = req.query
+        const paymentType = req.query.paymentType == 'false' ? JSON.parse(false) : req.query.paymentType
+        const orderType = req.query.orderType == 'false' ? JSON.parse(false) : req.query.orderType
+        const salesmen = req.query.salesmen == 'false' ? JSON.parse(false) : req.query.salesmen
+        const {start_date, end_date} = req.query;
+        let searchDateFrom = new Date(start_date).setHours(0);
+        let searchDateTo = new Date(end_date).setDate(new Date(end_date).getDate() + 1)
+        searchDateTo = new Date(searchDateTo).setHours(0);
 
-        let startDate
-        let endDate
+        let querey = {
+            order_status: true,
+            order_date: {
+                $gte: searchDateFrom,
+                $lt: searchDateTo
+            }
 
-
-        startDate = new Date(start_date)
-        endDate = new Date(end_date)
-
-        if (start_date && end_date) {
-            Order.find({order_date: {$gt: startDate, $lt: endDate}})
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send([])
-                })
-
-        } else if (start_date) {
-            Order.find({order_date: {$gt: startDate}})
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send([])
-                })
-        } else if (end_date) {
-            Order.find({order_date: {$lt: endDate}})
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send([])
-                })
-        } else if (service_rep) {
-            Order.find({service_rep: service_rep})
-                .limit(limit * 1)
-                .skip((page - 1) * limit)
-                .then((data) => {
-                    res.send(data)
-                })
-                .catch(err => {
-                    res.send([])
-                })
+        };
+        if (paymentType) {
+            querey = {...querey, 'payment.payment_mode': paymentType}
         }
+        if (orderType) {
+            querey = {...querey, type: orderType}
+        }
+        if (salesmen) {
+            querey = {...querey, service_rep: mongoose.Types.ObjectId(salesmen)}
+        }
+        const populateQuerey = [
+            {
+                path: 'service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'wash_service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'service.brand_id',
+                select: 'brandName'
+            },
+            // {
+            //     path:'service.varient',
+            //     select:'name'
+            // }
+        ]
 
-        // else if(start_date && end_date && service_rep) {
-        //     Order.find({order_date:{$gt:startDate,$lt:endDate},service_rep:service_rep})
-        //     .limit(limit * 1)
-        //     .skip((page-1)*limit)
-        //     .then((data) => {
-        //         res.send(data)
-        //     })
-        //     .catch(err => {
-        //         res.send([])
-        //     })
-        // }
+        Order.find(querey)
+            .limit(limit * 1)
+            .skip((page - 1) * limit)
+            .then((data) => {
+                res.send(data)
+            })
+            .catch(err => {
+                res.send([])
+            })
 
 
     } catch (err) {
+        console.log(err.message)
         res.send([])
     }
 }
@@ -697,6 +687,131 @@ exports.searchByVehicleNumber = async (req, res) => {
     }
 }
 
+exports.reportByServiceBK = (req, res) => {
+    try {
+        const {start_date, end_date, service_type, service_rep} = req.body
+        const {limit = 10, page = 1} = req.query
+
+        let startDate
+        let endDate
+        let query = {}
+
+
+        startDate = new Date(start_date)
+        endDate = new Date(end_date)
+
+        if (start_date && end_date) {
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            }
+
+
+        } else if (start_date) {
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            }
+        } else if (end_date) {
+            if (service_type === "All") {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            } else {
+                Order.find({
+                    order_date: {
+                        $gt: startDate,
+                        $lt: endDate,
+                        service_rep: service_rep,
+                        type: service_type
+                    }
+                }).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit)
+                    .then((data) => {
+                        res.send(data)
+                    })
+                    .catch(err => {
+                        res.send(err.message)
+                    })
+            }
+        }
+    } catch (err) {
+        res.send(err.message)
+    }
+}
 exports.reportByService = (req, res) => {
     try {
         const {start_date, end_date, service_type, service_rep} = req.body
