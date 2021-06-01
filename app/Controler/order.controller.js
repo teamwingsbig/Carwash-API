@@ -307,7 +307,7 @@ exports.getRecentOrders = (req, res) =>{
             //     select:'name'
             // }
         ]
-        Order.find({order_status:true,order_date:new Date(Date.now() - 24 * 60 * 60 * 1000)}).populate(query).sort({_id:-1}).limit(30).then((orders) => {
+        Order.find({order_status:true,order_date:new Date(Date.now() - 24 * 60 * 60 * 1000)}).populate(query).sort({_id:-1}).then((orders) => {
             res.send(orders)
         })
         .catch(err => {
