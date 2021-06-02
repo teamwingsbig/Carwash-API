@@ -2,7 +2,7 @@ const Order = require('../Models/order.model')
 const Response = require('../helper/response')
 const emailValidator = require('email-validator')
 const mongoose = require('mongoose')
-
+const paginate = require('jw-paginate')
 exports.createOrder = (req, res) => {
 
     try {
@@ -98,12 +98,12 @@ exports.createOrder = (req, res) => {
         if (customer_name == '' || customer_name == undefined) {
             return Response.sendFailedmsg(res, 'Name Is Required')
         }
-        if (customer_contact == '' || customer_contact == undefined) {
-            return Response.sendFailedmsg(res, 'Contact Is Required')
-        }
-        if (isNaN(customer_contact)) {
-            return Response.sendFailedmsg(res, 'Invalid Contact')
-        }
+        // if (customer_contact == '' || customer_contact == undefined) {
+        //     return Response.sendFailedmsg(res, 'Contact Is Required')
+        // }
+        // if (isNaN(customer_contact)) {
+        //     return Response.sendFailedmsg(res, 'Invalid Contact')
+        // }
         if (vehicle_name == '' || vehicle_name == undefined) {
             return Response.sendFailedmsg(res, 'Vehicle Name Is Required')
         }
@@ -177,9 +177,12 @@ exports.getSingleOrder = (req, res) => {
 }
 
 
-exports.orderReport = (req, res) => {
+exports.orderReport = async (req, res) => {
     try {
-        const {limit = 10, page = 1} = req.query
+        // const {limit = 10, page = 1} = req.query
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
         const paymentType = req.query.paymentType == 'false' ? JSON.parse(false) : req.query.paymentType
         const orderType = req.query.orderType == 'false' ? JSON.parse(false) : req.query.orderType
         const salesmen = req.query.salesmen == 'false' ? JSON.parse(false) : req.query.salesmen
@@ -187,7 +190,6 @@ exports.orderReport = (req, res) => {
         let searchDateFrom = new Date(start_date).setHours(0);
         let searchDateTo = new Date(end_date).setDate(new Date(end_date).getDate() + 1)
         searchDateTo = new Date(searchDateTo).setHours(0);
-
         let querey = {
             order_status: true,
             order_date: {
@@ -223,21 +225,48 @@ exports.orderReport = (req, res) => {
             //     select:'name'
             // }
         ]
-
+        let totalItems = await Order.find(querey)
         Order.find(querey)
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .then((data) => {
-                res.send(data)
+
+                // let response = {
+                //     total: totalItems.length,
+                //     totalPages: Math.ceil(totalItems.length / limit),
+                //     pageNumber: parseInt(page),
+                //     pageSize: data.length,
+                //     result: data
+                // }
+                const pager = paginate(totalItems.length, page, limit)
+                res.send({pager: pager, result: data})
             })
             .catch(err => {
-                res.send([])
+                console.log('here')
+                console.log(err.message)
+                // let response = {
+                //     total: 0,
+                //     totalPages: 0,
+                //     pageNumber: 0,
+                //     pageSize: 0,
+                //     result: []
+                // }
+                const pager = paginate(0, 0, 0)
+                res.send({pager: pager, result: []})
             })
 
 
     } catch (err) {
         console.log(err.message)
-        res.send([])
+        // let response = {
+        //     total: 0,
+        //     totalPages: 0,
+        //     pageNumber: 0,
+        //     pageSize: 0,
+        //     result: []
+        // }
+        const pager = paginate(0, 0, 0)
+        res.send({pager: pager, result: []})
     }
 }
 
