@@ -228,7 +228,7 @@ exports.orderReport = async (req, res) => {
         let totalItems = await Order.find(querey)
         Order.find(querey)
             .limit(limit * 1)
-            .skip((page - 1) * limit)
+            .skip((page - 1) * limit).populate(populateQuerey)
             .then((data) => {
 
                 // let response = {
