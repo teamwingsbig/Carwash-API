@@ -115,7 +115,6 @@ exports.getServiceRep = (req, res) => {
 // get by id
 exports.getSingleServiceRep = (req, res) => {
     try {
-
         ServiceRep.findById(req.params.id).then((data) => {
             res.send(data)
         })
@@ -154,7 +153,7 @@ exports.updateServiceRep = (req, res) => {
 
         const { name, mobile, email} = req.body
 
-        if(!name || !mobile || !email || !passcode || !password) {
+        if(!name || !mobile || !email) {
             return Response.sendFailedmsg(res,'Please Fill All Fields')
         }
        
