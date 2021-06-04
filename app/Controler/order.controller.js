@@ -273,32 +273,46 @@ exports.orderReport = async (req, res) => {
 exports.getOrderDetails = async (req, res) => {
 
     try {
+
+        let date = '2021-06-04'
+        let searchDateFrom = new Date(date).setHours(0);
+        let searchDateTo = new Date(date).setDate(new Date(date).getDate() + 1)
+        searchDateTo = new Date(searchDateTo).setHours(0);
         const today_net_total = await Order.aggregate([
             {$match: {order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}, order_status: true}},
+            // {
+            //     "$match": {
+            //         order_date: {
+            //             $gte: searchDateFrom,
+            //             $lt: searchDateTo
+            //         },
+            //         order_status: true
+            //     }
+            // },
             {$group: {_id: "", net_total: {$sum: "$payment.net_total"}}}
         ])
-
         const today_total_wash = await Order.find({
             type: 'Wash',
-            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)},
+            order_status: true
+
         }).countDocuments()
         const today_total_service = await Order.find({
             type: 'Service',
-            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)},
+            order_status: true
         }).countDocuments()
-        const total_service = await Order.find().countDocuments()
+        const totalOrders = await Order.find({
+            order_date: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)},
+            order_status: true
+        }).countDocuments()
 
-        let daily_net_total
-        if (today_net_total === undefined || today_net_total == '') {
-            daily_net_total = 0
-        } else {
-            daily_net_total = today_net_total
-        }
+
         const order_details = {
-            today_net_total: daily_net_total,
+            today_net_total: today_net_total.length <= 0 ? 0 : today_net_total[0].net_total,
             today_total_wash: today_total_wash,
             today_total_service: today_total_service,
-            total_service: total_service
+            total_orders: totalOrders
 
         }
         res.send(order_details)
