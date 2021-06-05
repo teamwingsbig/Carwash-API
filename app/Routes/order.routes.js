@@ -6,6 +6,7 @@ module.exports = (app) => {
     app.post('/order/reportByService',order.reportByService)
     app.get('/order/searchcustomer',order.searchCustomer)
     app.get('/order/orderDetails',order.getOrderDetails)
+    app.get('/order/dashboard/counts',order.getDashboardCounts)
     app.get('/order/recentOrders',order.getRecentOrders)
     app.get('/order/dailygross',order.dailyGross)
     // app.get('/order/monthlygross',order.monthlyGross)

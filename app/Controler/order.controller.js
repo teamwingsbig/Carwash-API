@@ -270,6 +270,32 @@ exports.orderReport = async (req, res) => {
     }
 }
 
+
+exports.getDashboardCounts = async (req, res) => {
+    try {
+        const totalWash = await Order.find({
+            type: 'Wash',
+            order_status: true
+        }).countDocuments()
+        const totalService = await Order.find({
+            type: 'Service',
+            order_status: true
+        }).countDocuments()
+        const totalOrder = await Order.find({
+            order_status: true
+        }).countDocuments()
+        let response = {
+            total: totalOrder,
+            wash: totalWash,
+            service: totalService
+        }
+        res.send(response)
+
+    } catch (err) {
+        res.send(err.message)
+    }
+}
+
 exports.getOrderDetails = async (req, res) => {
 
     try {
