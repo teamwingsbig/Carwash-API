@@ -33,6 +33,8 @@ app.get('/', (req, res) => {
     });
 });
 
+const vehicleRoutes = require('./app/Routes/vehicle.routes');
+
 // routes
 require('./app/Routes/service.routes')(app);
 require('./app/Routes/brand.routes')(app);
@@ -41,6 +43,7 @@ require('./app/Routes/emirate.routes')(app);
 require('./app/Routes/serviceRep.routes')(app);
 require('./app/Routes/order.routes')(app);
 require('./app/Routes/users.routes')(app);
+app.use('/vehicle', vehicleRoutes());
 
 
 app.listen(3000, () => {
