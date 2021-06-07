@@ -177,6 +177,108 @@ exports.getSingleOrder = (req, res) => {
 }
 
 
+exports.orderVehicleReport = async (req, res) => {
+    try {
+        // const {limit = 10, page = 1} = req.query
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const paymentType = req.query.paymentType == 'false' ? JSON.parse(false) : req.query.paymentType
+        const orderType = req.query.orderType == 'false' ? JSON.parse(false) : req.query.orderType
+        const salesmen = req.query.salesmen == 'false' ? JSON.parse(false) : req.query.salesmen
+        const vehicleNo = req.query.vehicleNo == 'false' ? JSON.parse(false) : req.query.vehicleNo
+        const {start_date, end_date} = req.query;
+        let searchDateFrom = new Date(start_date).setHours(0);
+        let searchDateTo = new Date(end_date).setDate(new Date(end_date).getDate() + 1)
+        searchDateTo = new Date(searchDateTo).setHours(0);
+        let querey = {
+            order_status: true,
+            order_date: {
+                $gte: searchDateFrom,
+                $lt: searchDateTo
+            }
+
+        };
+        if (vehicleNo) {
+            querey = {
+                ...querey, vehicle_number: {
+                    $regex: new RegExp(vehicleNo)
+
+                }
+            }
+
+        }
+        if (paymentType) {
+            querey = {...querey, 'payment.payment_mode': paymentType}
+        }
+        if (orderType) {
+            querey = {...querey, type: orderType}
+        }
+        if (salesmen) {
+            querey = {...querey, service_rep: mongoose.Types.ObjectId(salesmen)}
+        }
+        const populateQuerey = [
+            {
+                path: 'service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'wash_service.service_id',
+                select: 'title'
+            },
+            {
+                path: 'service.brand_id',
+                select: 'brandName'
+            },
+            // {
+            //     path:'service.varient',
+            //     select:'name'
+            // }
+        ]
+        let totalItems = await Order.find(querey)
+        Order.find(querey)
+            .limit(limit * 1)
+            .skip((page - 1) * limit).populate(populateQuerey)
+            .then((data) => {
+
+                // let response = {
+                //     total: totalItems.length,
+                //     totalPages: Math.ceil(totalItems.length / limit),
+                //     pageNumber: parseInt(page),
+                //     pageSize: data.length,
+                //     result: data
+                // }
+                const pager = paginate(totalItems.length, page, limit)
+                res.send({pager: pager, result: data})
+            })
+            .catch(err => {
+                console.log('here')
+                console.log(err.message)
+                // let response = {
+                //     total: 0,
+                //     totalPages: 0,
+                //     pageNumber: 0,
+                //     pageSize: 0,
+                //     result: []
+                // }
+                const pager = paginate(0, 0, 0)
+                res.send({pager: pager, result: []})
+            })
+
+
+    } catch (err) {
+        console.log(err.message)
+        // let response = {
+        //     total: 0,
+        //     totalPages: 0,
+        //     pageNumber: 0,
+        //     pageSize: 0,
+        //     result: []
+        // }
+        const pager = paginate(0, 0, 0)
+        res.send({pager: pager, result: []})
+    }
+}
 exports.orderReport = async (req, res) => {
     try {
         // const {limit = 10, page = 1} = req.query

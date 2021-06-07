@@ -2,6 +2,7 @@ module.exports = (app) => {
     const order = require('../Controler/order.controller.js')
 
     app.get('/order/report',order.orderReport);
+    app.get('/order/vehicle/report',order.orderVehicleReport);
     app.get('/order/filteredrecentorders',order.getFilteredRecentOrders)
     app.post('/order/reportByService',order.reportByService)
     app.get('/order/searchcustomer',order.searchCustomer)
