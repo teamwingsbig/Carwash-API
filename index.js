@@ -46,6 +46,6 @@ require('./app/Routes/users.routes')(app);
 app.use('/vehicle', vehicleRoutes());
 
 
-app.listen(3000, () => {
+app.listen(80, () => {
     console.log('Server started')
 })

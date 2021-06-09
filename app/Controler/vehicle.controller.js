@@ -49,12 +49,30 @@ exports.createBrand = (req, res) => {
 
 exports.getBrand = (req, res) => {
     try {
-        Brand.find({status: true}).sort({createdAt: -1}).then((brand) => {
+        Brand.aggregate([
+            {
+                $match: {status: true}
+            },
+            {
+                $lookup: {
+                    from: 'vehicles',
+                    localField: '_id',
+                    foreignField: 'brand',
+                    as: 'vehicles'
+                }
+            },
+            {$sort: {createdAt: -1}}
+        ]).then(brand => {
             res.send(brand)
+        }).catch(err => {
+            res.send([])
         })
-            .catch(err => {
-                res.send([])
-            })
+        // Brand.find({status: true}).sort({createdAt: -1}).then((brand) => {
+        //     res.send(brand)
+        // })
+        //     .catch(err => {
+        //         res.send([])
+        //     })
 
     } catch (e) {
         res.send([])
@@ -96,7 +114,7 @@ exports.deleteBrand = (req, res) => {
     }
 }
 
-// update brand details 
+// update brand details
 exports.updateBrand = (req, res) => {
     try {
 
