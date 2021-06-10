@@ -66,7 +66,7 @@ exports.createOrder = (req, res) => {
         }
 
         // console.log(washserviceArray)
-        const taxable_amount = parseFloat(payment.subtotal) - parseInt(payment.discount)
+        // const taxable_amount = parseFloat(payment.subtotal) - parseInt(payment.discount)
 
 
         const paymentDetails = {
@@ -74,7 +74,7 @@ exports.createOrder = (req, res) => {
             payment_date: payment.payment_date,
             subtotal: payment.subtotal,
             discount: payment.discount,
-            taxable_amount: taxable_amount,
+            taxable_amount: payment.taxable_amount,
             vat_total: payment.vat_total,
             net_total: payment.net_total,
             payment_status: status
