@@ -84,7 +84,7 @@ exports.createOrder = (req, res) => {
 
 
         const {
-            customer_name,
+            customer_name = '',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -95,9 +95,9 @@ exports.createOrder = (req, res) => {
             service_rep
         } = req.body
 
-        if (customer_name == '' || customer_name == undefined) {
-            return Response.sendFailedmsg(res, 'Name Is Required')
-        }
+        // if (customer_name == '' || customer_name == undefined) {
+        //     return Response.sendFailedmsg(res, 'Name Is Required')
+        // }
         // if (customer_contact == '' || customer_contact == undefined) {
         //     return Response.sendFailedmsg(res, 'Contact Is Required')
         // }
@@ -724,7 +724,7 @@ exports.updateOrder = (req, res) => {
 
 
         const {
-            customer_name,
+            customer_name='',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -735,9 +735,9 @@ exports.updateOrder = (req, res) => {
             service_rep
         } = req.body
 
-        if (customer_name == '' || customer_name == undefined) {
-            return Response.sendFailedmsg(res, 'Name Is Required')
-        }
+        // if (customer_name == '' || customer_name == undefined) {
+        //     return Response.sendFailedmsg(res, 'Name Is Required')
+        // }
         if (customer_contact == '' || customer_contact == undefined) {
             return Response.sendFailedmsg(res, 'Contact Is Required')
         }
