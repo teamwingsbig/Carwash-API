@@ -32,33 +32,33 @@ exports.createService = (req, res) => {
         return Response.sendFailedmsg(res,"Could not add service ")
     }
 
-    if(brand) {
-        for (const brands of brand) {
-            for (const varients of brands.varients) {
-
-                if(!varients.price || !varients.price) {
-                    return Response.sendFailedmsg(res,'Please Fill Varient Details')
-                }
-                varientArray.push({
-                    name:varients.name,
-                    price:varients.price
-                })
-            }
-            
-            const brand_id = brands.brand_id
-    
-            if(varientArray.length<=0){
-                return Response.sendFailedmsg(res,"Specify Varient")
-            }
-            if(!brand_id){
-                return Response.sendFailedmsg(res,"Please specify brand")
-            }
-            brand_array.push({
-                brand_id: brand_id,
-                varients: varientArray
-            })
-        }        
-    } 
+    // if(brand) {
+    //     for (const brands of brand) {
+    //         for (const varients of brands.varients) {
+    //
+    //             if(!varients.price || !varients.price) {
+    //                 return Response.sendFailedmsg(res,'Please Fill Varient Details')
+    //             }
+    //             varientArray.push({
+    //                 name:varients.name,
+    //                 price:varients.price
+    //             })
+    //         }
+    //
+    //         const brand_id = brands.brand_id
+    //
+    //         if(varientArray.length<=0){
+    //             return Response.sendFailedmsg(res,"Specify Varient")
+    //         }
+    //         if(!brand_id){
+    //             return Response.sendFailedmsg(res,"Please specify brand")
+    //         }
+    //         brand_array.push({
+    //             brand_id: brand_id,
+    //             varients: varientArray
+    //         })
+    //     }
+    // }
     let charges = charge
     if(type == 'Service') {
         charges = 0
@@ -175,13 +175,13 @@ exports.updateService = (req, res) => {
         // }
 
         if(!title){
-            return  Response.sendFailedmsg(res,"Plese enter title")
+            return  Response.sendFailedmsg(res,"Please enter title")
         }
         if(!description){
-            return  Response.sendFailedmsg(res,"Plese enter description")
+            return  Response.sendFailedmsg(res,"Please enter description")
         }
         if(!type){
-            return  Response.sendFailedmsg(res,"Plese select servicetype")
+            return  Response.sendFailedmsg(res,"Please select servicetype")
         }
         
 
