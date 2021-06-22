@@ -156,23 +156,23 @@ exports.updateService = (req, res) => {
         const AlphaRegEx = /^(?!-)[a-zA-Z-]*[a-zA-Z]$/
 
 
-        for(const brands of brand){
-            for(const varients of brands.varients){
-                varientArray.push(varients)
-            }
-            const brand_id = brands.brand_id
-            if(varientArray.length<=0){
-                return Response.sendFailedmsg(res,"Specify Varient")
-            }
-            if(!brand_id){
-                return  Response.sendFailedmsg(res,"Please specify brand")
-            }
-            brand_array.push({
-                brand_id: brand_id,
-                varients: varientArray
-            })        
-           
-        }
+        // for(const brands of brand){
+        //     for(const varients of brands.varients){
+        //         varientArray.push(varients)
+        //     }
+        //     const brand_id = brands.brand_id
+        //     if(varientArray.length<=0){
+        //         return Response.sendFailedmsg(res,"Specify Varient")
+        //     }
+        //     if(!brand_id){
+        //         return  Response.sendFailedmsg(res,"Please specify brand")
+        //     }
+        //     brand_array.push({
+        //         brand_id: brand_id,
+        //         varients: varientArray
+        //     })
+        //
+        // }
 
         if(!title){
             return  Response.sendFailedmsg(res,"Plese enter title")
@@ -196,7 +196,7 @@ exports.updateService = (req, res) => {
             title: title,
             description: description,
             type:type,
-            brand: (brand_array),
+            brand: (brand),
             charge:charge,
             tax:tax,
             vat:vat 
