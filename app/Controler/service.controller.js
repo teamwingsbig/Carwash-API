@@ -70,7 +70,7 @@ exports.createService = (req, res) => {
         title: title,
         description: description,
         type:type,
-        brand: (brand_array),
+        brand: (brand),
         charge:charges,
         tax:tax
 
