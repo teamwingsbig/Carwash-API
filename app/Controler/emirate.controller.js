@@ -51,7 +51,7 @@ exports.createEmirate = (req, res) => {
 exports.getEmirate = (req, res) => {
 
     try{
-        Emirate.find({status:true}).then((emirate)=>{
+        Emirate.find({status:true}).sort({createdAt: -1}).then((emirate)=>{
             res.send(emirate)
         })
         .catch(err=>{

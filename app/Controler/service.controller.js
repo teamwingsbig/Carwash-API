@@ -96,7 +96,7 @@ exports.getService = (req, res) => {
         const services = []
 
         if(type) {
-            Service.find({type:type,status:true}).populate('brand.brand_id','brandName').then((service)=>{  
+            Service.find({type:type,status:true}).populate('brand.brand_id','brandName').sort({createdAt: -1}).then((service)=>{
                 res.send(service)                
             })
             .catch(err=>{

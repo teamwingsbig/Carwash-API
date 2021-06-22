@@ -117,7 +117,7 @@ exports.getCompany = (req, res) => {
   try {
    
 
-      Company.find().then((company)=>{
+      Company.find().sort({createdAt: -1}).then((company)=>{
           res.send(company)
       })
       .catch(err=>{
