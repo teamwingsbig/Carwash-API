@@ -8,6 +8,7 @@ const customerOrder = mongoose.Schema({
     customer_trn: {type: String},
     vehicle_name: {type: String,},
     vehicle_number: {type: String, required: true},
+    vehicle_brand: {type: mongoose.Types.ObjectId,ref:"vehicleBrand", required: true,},
     order_date: {type: Date, default: Date.now},
     order_status: {type: Boolean, default: true},
     service: [{

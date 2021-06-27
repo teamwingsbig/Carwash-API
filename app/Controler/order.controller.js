@@ -89,6 +89,7 @@ exports.createOrder = (req, res) => {
             customer_trn,
             vehicle_name,
             vehicle_number,
+            vehicle_brand,
             invoice_number,
             invoice_ref_number,
             type,
@@ -127,6 +128,7 @@ exports.createOrder = (req, res) => {
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
             vehicle_number: vehicle_number,
+            vehicle_brand:vehicle_brand,
             type: type,
             service: serviceArray,
             wash_service: washserviceArray,
@@ -150,7 +152,7 @@ exports.createOrder = (req, res) => {
 exports.getOrders = (req, res) => {
     try {
 
-        Order.find().then((data) => {
+        Order.find().populate('vehicle_brand','_id name').then((data) => {
             res.send(data)
         })
             .catch(err => {
@@ -165,7 +167,7 @@ exports.getOrders = (req, res) => {
 exports.getSingleOrder = (req, res) => {
     try {
 
-        Order.findById(req.params.id).then((data) => {
+        Order.findById(req.params.id).populate('vehicle_brand','_id name').then((data) => {
             res.send(data)
         })
             .catch(err => {
@@ -729,6 +731,7 @@ exports.updateOrder = (req, res) => {
             customer_trn,
             vehicle_name,
             vehicle_number,
+            vehicle_brand,
             invoice_number,
             invoice_ref_number,
             type,
@@ -818,7 +821,9 @@ exports.searchCustomer = async (req, res) => {
                         }
                     ]
                 },
-            ).select('customer_name customer_contact customer_email vehicle_name vehicle_number')
+            ).
+            select('customer_name customer_contact customer_email vehicle_name vehicle_number customer_trn vehicle_brand')
+                .populate('vehicle_brand','_id name')
                 // .distinct('customer_contact')
                 // const srch = await Order.aggregate([
                 //     {$match: {customer_contact: new RegExp(queryvalue)}},
