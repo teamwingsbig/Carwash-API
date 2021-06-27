@@ -490,10 +490,10 @@ exports.getRecentOrders = (req, res) => {
                 path: 'service.brand_id',
                 select: 'brandName'
             },
-            // {
-            //     path:'service.varient',
-            //     select:'name'
-            // }
+            {
+                path:'vehicle_brand',
+                select:'_id name'
+            }
         ]
         Order.find(querey).populate(populateQuerey).sort({_id: -1}).then((orders) => {
             res.send(orders)
