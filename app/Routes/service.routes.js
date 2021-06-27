@@ -3,6 +3,7 @@ module.exports = (app) => {
 
     app.post('/service',service.createService);
     app.get('/service',service.getService);
+    app.get('/service/variant/filter',service.getVariants);
     app.get('/service/:id',service.getSingleService);
     app.put('/service/:id',service.deleteService);
     app.patch('/service/:id',service.updateService);
