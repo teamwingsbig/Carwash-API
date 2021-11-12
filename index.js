@@ -44,6 +44,7 @@ const vehicleRoutes = require('./app/Routes/vehicle.routes');
 require('./app/Routes/service.routes')(app);
 require('./app/Routes/brand.routes')(app);
 require('./app/Routes/company.routes')(app);
+require('./app/Routes/customer.routes')(app);
 require('./app/Routes/emirate.routes')(app);
 require('./app/Routes/serviceRep.routes')(app);
 require('./app/Routes/order.routes')(app);
@@ -51,6 +52,6 @@ require('./app/Routes/users.routes')(app);
 app.use('/vehicle', vehicleRoutes());
 
 
-app.listen(80, () => {
+app.listen(3000, () => {
     console.log('Server started')
 })
