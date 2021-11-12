@@ -4,7 +4,7 @@ const path = require('path')
 
 exports.createCustomer=(req,res)=>{
     try{
-        const { name, address, mobile} = req.body
+        const { name, address, mobile,TRN} = req.body
         if(!name  ) {
             return Response.sendFailedmsg(res,'Please Fill All Fields')
           }
@@ -12,7 +12,8 @@ exports.createCustomer=(req,res)=>{
           const customer = new Customer({
             name :name,
             address:address,          
-            mobile:mobile,        
+            mobile:mobile,     
+            trn:TRN     
           })
           
              customer.save().then(company => {
@@ -29,14 +30,15 @@ exports.createCustomer=(req,res)=>{
 
 exports.updateCustomer=(req,res)=>{
     try{
-        const { name, address, mobile} = req.body
+        const { name, address, mobile,TRN} = req.body
         if(!name  ) {
             return Response.sendFailedmsg(res,'Please Fill All Fields')
           }
           Customer.findOneAndUpdate({_id:req.params.id},{
             name :name,
             address:address,          
-            mobile:mobile            
+            mobile:mobile,
+            trn:TRN            
           }).then(company => {
             return Response.sendSuccessmsg(res,'Customer Details Updated')
           })
