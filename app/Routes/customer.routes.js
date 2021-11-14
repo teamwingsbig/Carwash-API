@@ -5,5 +5,5 @@ module.exports = (app)=>{
     app.get('/customer',customer.getCustomer);
     app.get('/customer/:id',customer.getSingleCustomer);
     app.patch('/customer/:id',customer.updateCustomer);
-    app.delete('/customer/:id',customer.deleteCustomer);
+    app.put('/customer/:id',customer.deleteCustomer);
 }
