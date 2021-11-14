@@ -5,11 +5,13 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const cors = require('cors');
 
+require('dotenv').load();
 
+const constants = require('./config/constants')
 const app = express()
 // cors
 app.use(cors())
-mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
+mongoose.connect(process.env.MONGODB, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const con = mongoose.connection
 
 con.on('open', () => {
@@ -39,6 +41,7 @@ app.get('/', (req, res) => {
 
 const vehicleRoutes = require('./app/Routes/vehicle.routes');
 const customerTypeRoutes = require('./app/Routes/customer-types.routes');
+const {config} = require("dotenv");
 
 // routes
 require('./app/Routes/service.routes')(app);
@@ -53,6 +56,8 @@ app.use('/vehicle', vehicleRoutes());
 app.use('/customer-type', customerTypeRoutes());
 
 
-app.listen(3000, () => {
-    console.log('Server started')
+const port = constants.COMMON.PORT
+
+app.listen(port, () => {
+    console.log('Server started on ' + port)
 })
