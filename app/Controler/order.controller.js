@@ -19,7 +19,6 @@ exports.createOrder = (req, res) => {
         const wash_service = req.body.wash_service
         const payment = req.body.payment
         const status = req.body.status == undefined ? JSON.parse('false') : JSON.parse(req.body.status);
-
         if (service === undefined && wash_service === undefined) {
             return Response.sendFailedmsg(res, 'Please Specify Service Details')
         }
@@ -85,7 +84,7 @@ exports.createOrder = (req, res) => {
 
         const {
             customer_name = '',
-            customer_id='',
+            customer_id = '',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -122,22 +121,32 @@ exports.createOrder = (req, res) => {
             return Response.sendFailedmsg(res, 'Invalid Service Rep')
         }
 
+        /*
+        handle images
+         */
 
+        const images = [];
+        if (req.files.length > 0) {
+            for (let pic of req.files) {
+                images.push({file_name: pic.path, status: true});
+            }
+        }
         const order = new Order({
             customer_name: customer_name,
-            customer_id:customer_id,
+            customer_id: customer_id,
             customer_contact: customer_contact,
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
             vehicle_number: vehicle_number,
-            vehicle_brand:vehicle_brand,
+            vehicle_brand: vehicle_brand,
             type: type,
             service: serviceArray,
             wash_service: washserviceArray,
             invoice_number: invoice_number,
             invoice_ref_number: invoice_ref_number,
             service_rep: service_rep,
-            payment: paymentDetails
+            payment: paymentDetails,
+            images: images
         })
 
         order.save().then((data) => {
@@ -154,7 +163,7 @@ exports.createOrder = (req, res) => {
 exports.getOrders = (req, res) => {
     try {
 
-        Order.find().populate('vehicle_brand','_id name').then((data) => {
+        Order.find().populate('vehicle_brand', '_id name').then((data) => {
             res.send(data)
         })
             .catch(err => {
@@ -169,7 +178,7 @@ exports.getOrders = (req, res) => {
 exports.getSingleOrder = (req, res) => {
     try {
 
-        Order.findById(req.params.id).populate('vehicle_brand','_id name').then((data) => {
+        Order.findById(req.params.id).populate('vehicle_brand', '_id name').then((data) => {
             res.send(data)
         })
             .catch(err => {
@@ -493,8 +502,8 @@ exports.getRecentOrders = (req, res) => {
                 select: 'brandName'
             },
             {
-                path:'vehicle_brand',
-                select:'_id name'
+                path: 'vehicle_brand',
+                select: '_id name'
             }
         ]
         Order.find(querey).populate(populateQuerey).sort({_id: -1}).then((orders) => {
@@ -728,8 +737,8 @@ exports.updateOrder = (req, res) => {
 
 
         const {
-            customer_name='',
-            customer_id='',
+            customer_name = '',
+            customer_id = '',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -769,7 +778,7 @@ exports.updateOrder = (req, res) => {
 
         Order.findOneAndUpdate({_id: req.params.id}, {
             customer_name: customer_name,
-            customer_id:customer_id,
+            customer_id: customer_id,
             customer_contact: customer_contact,
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
@@ -825,9 +834,8 @@ exports.searchCustomer = async (req, res) => {
                         }
                     ]
                 },
-            ).
-            select('customer_name customer_contact customer_email vehicle_name vehicle_number customer_trn vehicle_brand')
-                .populate('vehicle_brand','_id name')
+            ).select('customer_name customer_contact customer_email vehicle_name vehicle_number customer_trn vehicle_brand')
+                .populate('vehicle_brand', '_id name')
                 // .distinct('customer_contact')
                 // const srch = await Order.aggregate([
                 //     {$match: {customer_contact: new RegExp(queryvalue)}},
