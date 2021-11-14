@@ -53,7 +53,9 @@ exports.getCustomer = (req, res) => {
     try {
      
   
-        Customer.find().sort({createdAt: -1}).then((customer)=>{
+        Customer.find({        
+          status: true
+      }).sort({createdAt: -1}).then((customer)=>{
             res.send(customer)
         })
         .catch(err=>{
@@ -83,18 +85,16 @@ exports.getCustomer = (req, res) => {
     }
   
   }
-  exports.deleteCustomer = (req, res) => {
-    try {
-
-     Customer.findOneAndDelete(req.params.id).then((data) =>{
-       return Response.sendSuccessmsg(res,'Customer Details Deleted')
-     })
-     .catch(err => {
-       return Response.sendFailedmsg(res,'Failed To Delete', err.message)
-     })
-    }
-    catch(err){
-      return Response.sendFailedmsg(res,'failed To Delete',err.message)
-    }
+exports.deleteCustomer = (req, res) => {
+  try {
+    Customer.findOneAndUpdate({_id: req.params.id}, {status: false}).then((data) => {
+          return Response.sendSuccessmsg(res, 'Customer Deleted')
+      })
+          .catch(err => {
+              return Response.sendFailedmsg(res, 'Failed To Delete Customer', err.message)
+          })
+  } catch (err) {
+      return Response.sendFailedmsg(res, 'Failed To Delete Customer', err.message)
+  }
 }
   

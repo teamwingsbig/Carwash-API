@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const customerOrder = mongoose.Schema({
 
     customer_name: {type: String},
+    customer_id: {type: String},
     customer_contact: {type: String},
     customer_email: {type: String},
     customer_trn: {type: String},

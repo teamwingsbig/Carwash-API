@@ -6,7 +6,8 @@ const customerSchema  = mongoose.Schema({
     name:{ type:String, required:true},
     mobile:{ type:String, required:false},
     address:{type:String, required:false},
-    trn:{type:String, required:false}
+    trn:{type:String, required:false},
+    status: {type: Boolean, default: true},
    
 });
 

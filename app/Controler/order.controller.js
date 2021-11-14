@@ -85,6 +85,7 @@ exports.createOrder = (req, res) => {
 
         const {
             customer_name = '',
+            customer_id='',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -124,6 +125,7 @@ exports.createOrder = (req, res) => {
 
         const order = new Order({
             customer_name: customer_name,
+            customer_id:customer_id,
             customer_contact: customer_contact,
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
@@ -727,6 +729,7 @@ exports.updateOrder = (req, res) => {
 
         const {
             customer_name='',
+            customer_id='',
             customer_contact,
             customer_trn,
             vehicle_name,
@@ -766,6 +769,7 @@ exports.updateOrder = (req, res) => {
 
         Order.findOneAndUpdate({_id: req.params.id}, {
             customer_name: customer_name,
+            customer_id:customer_id,
             customer_contact: customer_contact,
             customer_trn: customer_trn,
             vehicle_name: vehicle_name,
