@@ -9,7 +9,7 @@ const customerOrder = mongoose.Schema({
     customer_trn: {type: String},
     vehicle_name: {type: String,},
     vehicle_number: {type: String, required: true},
-    vehicle_brand: {type: mongoose.Types.ObjectId,ref:"vehicleBrand", required: true,},
+    vehicle_brand: {type: mongoose.Types.ObjectId, ref: "vehicleBrand", required: true,},
     order_date: {type: Date, default: Date.now},
     order_status: {type: Boolean, default: true},
     service: [{
@@ -42,7 +42,13 @@ const customerOrder = mongoose.Schema({
         vat_total: {type: Number, required: true},
         net_total: {type: Number, required: true},
         payment_status: {type: Boolean, default: true}
-    }
+    },
+    images: [
+        {
+            fileName: {type: String},
+            status: {type: Boolean, default: true}
+        }
+    ]
 
 })
 module.exports = mongoose.model('customer_order', customerOrder)
