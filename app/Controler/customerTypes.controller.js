@@ -78,7 +78,7 @@ exports.updateType= (req, res) => {
 
         const {name} = req.body
 
-        if (name) {
+        if (!name) {
             return Response.sendFailedmsg(res, "PLease Fill All Fields")
         }
 
