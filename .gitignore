@@ -1,0 +1,11 @@
+db_bson/
+node_modules/
+.vscode/
+/node_modules
+/node_modules/*
+node_modules/*
+.env
+Uploads/
+Uploads/*
+/Uploads/*
+/Uploads

@@ -5,11 +5,13 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const cors = require('cors');
 
+require('dotenv').load();
 
+const constants = require('./config/constants')
 const app = express()
 // cors
 app.use(cors())
-mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology: true, useFindAndModify: false})
+mongoose.connect(process.env.MONGODB, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 const con = mongoose.connection
 
 con.on('open', () => {
@@ -17,18 +19,17 @@ con.on('open', () => {
 })
 
 
-app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.json({limit: '50mb'}))
 app.use(bodyParser.urlencoded({
     limit: '50mb',
     extended: false,
 }))
 app.use(express.json());
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(fileUpload())
 app.use(express.static('./app/Files/Logo/'))
 app.use(express.static('./app/Files/Qrcode/'))
-
 
 
 // define initial route
@@ -39,6 +40,8 @@ app.get('/', (req, res) => {
 });
 
 const vehicleRoutes = require('./app/Routes/vehicle.routes');
+const customerTypeRoutes = require('./app/Routes/customer-types.routes');
+const {config} = require("dotenv");
 
 // routes
 require('./app/Routes/service.routes')(app);
@@ -50,8 +53,11 @@ require('./app/Routes/serviceRep.routes')(app);
 require('./app/Routes/order.routes')(app);
 require('./app/Routes/users.routes')(app);
 app.use('/vehicle', vehicleRoutes());
+app.use('/customer-type', customerTypeRoutes());
 
 
-app.listen(3000, () => {
-    console.log('Server started')
+const port = constants.COMMON.PORT
+
+app.listen(port, () => {
+    console.log('Server started on ' + port)
 })
