@@ -19,15 +19,18 @@ con.on('open', () => {
 })
 
 
-app.use(bodyParser.json({limit: '50mb'}))
-app.use(bodyParser.urlencoded({
-    limit: '50mb',
-    extended: false,
-}))
-app.use(express.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
-app.use(fileUpload())
+// app.use(bodyParser.json({limit: '50mb'}))
+// app.use(bodyParser.urlencoded({
+//     limit: '50mb',
+//     extended: false,
+// }))
+// app.use(express.json());
+// app.use(bodyParser.urlencoded({extended: true}));
+// app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: 'true', limit: '50mb' })); 			// parse application/x-www-form-urlencoded
+app.use(bodyParser.json({ limit: '100mb' })); 									// parse application/json
+app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
+// app.use(fileUpload())
 app.use(express.static('./app/Files/Logo/'))
 app.use(express.static('./app/Files/Qrcode/'))
 
