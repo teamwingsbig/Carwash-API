@@ -1,6 +1,24 @@
 const Brand = require('../Models/brand.model');
 const Response = require('../helper/response')
 
+exports.testImage = (req, res) => {
+    try {
+        const {body}=req;
+        console.log(body)
+    }
+    catch (error) {
+        return Response.sendFailedmsg(res, "Failed To Add Brand")
+
+        // res.send({
+        //     status:flase,
+        //     message:"Failed To Add Brand",
+        //     error:err.message
+        // })
+
+    }
+
+}
+
 exports.createBrand = (req, res) => {
     try {
         const {Name} = req.body
@@ -93,7 +111,7 @@ exports.replaceBrand = (req, res) => {
     }
 }
 
-// update brand details 
+// update brand details
 exports.updateBrand = (req, res) => {
     try {
 
