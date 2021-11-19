@@ -128,9 +128,10 @@ exports.createOrder = (req, res) => {
         const images = [];
         if (req.files.length > 0) {
             for (let pic of req.files) {
-                images.push({file_name: pic.path, status: true});
+                images.push({fileName: pic.path, status: true});
             }
         }
+        console.log(images);
         const order = new Order({
             customer_name: customer_name,
             customer_id: customer_id,

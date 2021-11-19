@@ -33,6 +33,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 // app.use(fileUpload())
 app.use(express.static('./app/Files/Logo/'))
 app.use(express.static('./app/Files/Qrcode/'))
+app.use('/Uploads', express.static('Uploads'));
 
 
 // define initial route
