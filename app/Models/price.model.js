@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 
 const priceSchema = mongoose.Schema({
     customerType: {
-        type: mongoose.Types.ObjectId, ref: 'customerTypes'
+        type: mongoose.Types.ObjectId, ref: 'customerTypes',
         required: true
     },
     service: {
-        type: mongoose.Types.ObjectId, ref: 'service_master'
+        type: mongoose.Types.ObjectId, ref: 'service_master',
         required: true
     },
     price: {

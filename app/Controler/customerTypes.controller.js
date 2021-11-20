@@ -2,7 +2,8 @@ const CustomerTypes = require('../Models/customerTypes.model')
 const Response = require('../helper/response')
 const path = require('path')
 const Brand = require("../Models/brand.model");
-
+const productList = require("../Models/service.model");
+const priceSlab = require("../Models/price.model");
 exports.createType = (req, res) => {
     try {
         const {name} = req.body
@@ -14,8 +15,52 @@ exports.createType = (req, res) => {
             name: name,
             status: true
         })
-
+     
         customerType.save().then(company => {
+            productList.find({status: true}).sort({createdAt: -1}).then((type) => {          
+                type.forEach(list => {    
+                    if(list.type=="Wash")
+                    {                        
+                        const priceData= new priceSlab({
+                            customerType:company._id,
+                            service:list._id,
+                            price:list.charge,
+                            serviceType:"Wash"
+                           });
+                           
+                           priceData.save().then(priceData => {
+                               console.log(priceData);                         
+                        }) 
+                    }
+                    else if(list.type=="Service")
+                    {
+                        if(list.brand.length>0)
+                        {
+                            list.brand.forEach(element => {
+                                element.varients.forEach(variantElement => {
+                                    product_id=variantElement._id;
+                                    price=variantElement.price;
+                                   
+ 
+                                    const priceData= new priceSlab({
+                                     customerType:company._id,
+                                     service:product_id,
+                                     price:price,
+                                     serviceType:"Service"
+                                    });
+                                    
+                                    priceData.save().then(priceData => {
+                                        console.log(priceData);
+                                  
+                                 })   
+                                });                     
+                           });
+                        }
+                    }
+                                                    
+                });
+             })
+           
             return Response.sendSuccessmsg(res, 'Customer Type Added')
         })
             .catch(err => {
