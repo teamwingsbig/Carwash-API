@@ -25,7 +25,7 @@ exports.createType = (req, res) => {
                             customerType:company._id,
                             service:list._id,
                             price:list.charge,
-                            serviceType:"Wash"ivde 
+                            serviceType:"Wash"
                            });
                            
                            priceData.save().then(priceData => {
