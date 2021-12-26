@@ -25,7 +25,7 @@ exports.createType = (req, res) => {
                             customerType:company._id,
                             service:list._id,
                             price:list.charge,
-                            serviceType:"Wash"
+                            serviceType:"Wash"ivde 
                            });
                            
                            priceData.save().then(priceData => {
@@ -67,7 +67,8 @@ exports.createType = (req, res) => {
                 return Response.sendFailedmsg(res, 'Failed To Add Customer type', err.message)
             })
 
-    } catch {
+    } catch (error) {
+        return Response.sendFailedmsg(res, 'Failed To Create Customer Type', err.message)
     }
 }
 
