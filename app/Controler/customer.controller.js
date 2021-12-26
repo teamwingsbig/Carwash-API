@@ -47,7 +47,8 @@ exports.updateCustomer = (req, res) => {
             .catch(err => {
                 return Response.sendFailedmsg(res, 'Failed To Update Customer Details', err.message)
             })
-    } catch {
+    } catch (error) {
+        return Response.sendFailedmsg(res, 'Failed To Create Customer ', err.message)
     }
 }
 exports.getCustomer = (req, res) => {
@@ -66,8 +67,8 @@ exports.getCustomer = (req, res) => {
             })
 
 
-    } catch (e) {
-        res.send([])
+    } catch (error) {
+        return Response.sendFailedmsg(res, 'Failed To Create Customer ', err.message)
     }
 }
 exports.getSingleCustomer = (req, res) => {
@@ -82,7 +83,7 @@ exports.getSingleCustomer = (req, res) => {
             })
 
     } catch (error) {
-        res.send([])
+        return Response.sendFailedmsg(res, 'Failed To Create Customer ', err.message)
     }
 
 }
