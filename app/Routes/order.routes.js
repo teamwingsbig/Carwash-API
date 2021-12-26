@@ -12,7 +12,7 @@ module.exports = (app) => {
     app.get('/order/recentOrders', order.getRecentOrders)
     app.get('/order/dailygross', order.dailyGross)
     // app.get('/order/monthlygross',order.monthlyGross)
-    app.post('/order',upload.array('images', 12), order.createOrder);
+    app.post('/order',upload.array('images[]', 12), order.createOrder);
     app.get('/order', order.getOrders);
     app.get('/order/:id', order.getSingleOrder);
     app.put('/order/updateorder/:id', order.updateOrder)
