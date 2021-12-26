@@ -24,7 +24,8 @@ exports.createCustomer = (req, res) => {
                 return Response.sendFailedmsg(res, 'Failed To Add Customer Details', err.message)
             })
 
-    } catch {
+    } catch (error) {
+        return Response.sendFailedmsg(res, 'Failed To Create Customer ', err.message)
     }
 }
 
